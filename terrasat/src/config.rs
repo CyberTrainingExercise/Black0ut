@@ -75,13 +75,16 @@ impl Satellite {
 			connection_limit: 0
 		}
 	}
-	pub fn print(&self, pre: &str) {
+	pub fn print_short(&self) {
 		let status = match self.status {
 			SatelliteStatus::ACTIVE => "ACTIVE".green(),
 			SatelliteStatus::INACTIVE => "ACTIVE".red(),
 			SatelliteStatus::SLEEP => "ACTIVE".yellow(),
 		};
 		println!("{} - {}:", self.name, status);
+	}
+	pub fn print_long(&self, pre: &str) {
+		self.print_short();
 		println!("{}OS - {}", pre, self.os);
 		print!("{}Debug mode - ", pre);
 		match self.debug_mode {

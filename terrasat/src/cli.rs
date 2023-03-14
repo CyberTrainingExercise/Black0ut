@@ -39,12 +39,6 @@ impl CLI {
         ")
     }
 
-    fn print_list(&self) {
-        for sat in &self.config.satellites {
-            sat.print("\t\t");
-        }
-    }
-
     pub fn run(&self) {
         self.print_startup();
         loop {
@@ -59,13 +53,12 @@ impl CLI {
             if let Some('\r') = input.chars().next_back() {
                 input.pop();
             }
-            println!("Echo: {}", input);
 
             // Break into tokens
             let tokens: Vec<String> = input.split(" ").map(|s| s.to_string()).collect();
 
             if tokens.is_empty() {
-                println!("Err: input invalid, please try again!");
+                continue;
             }
 
             // Match on tokens
@@ -78,10 +71,35 @@ impl CLI {
                     return;
                 }
                 CMD_LIST => {
-                    self.print_list();
+                    for sat in &self.config.satellites {
+                        sat.print_short();
+                    }
+                }
+                CMD_INFO => {
+                    if tokens.len() != 2 {
+                        println!("{} takes two parameters", CMD_INFO);
+                        continue;
+                    }
+                    let index = tokens[1].parse::<usize>();
+                    if index.is_err() || index.as_ref().unwrap() >= &self.config.satellites.len() {
+                        println!("Cannot parse '{}' as index. Index must be an integer 0 < x < {}",
+                        tokens[1], &self.config.satellites.len());
+                        continue;
+                    }
+                    let index = index.unwrap();
+                    self.config.satellites[index].print_long("\t\t");
+                }
+                CMD_PLAN => {
+                    println!("UNIMPLEMENTED!");
+                }
+                CMD_SLEEP => {
+                    println!("UNIMPLEMENTED!");
+                }
+                CMD_WAKE => {
+                    println!("UNIMPLEMENTED!");
                 }
                 _ => {
-                    print!("Err: input {} invalid", tokens[0]);
+                    println!("Command '{}' not recognized. Type 'help' for list of commands.", tokens[0]);
                 }
             }
         }
