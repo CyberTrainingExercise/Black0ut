@@ -81,7 +81,7 @@ impl Satellite {
 			SatelliteStatus::INACTIVE => "ACTIVE".red(),
 			SatelliteStatus::SLEEP => "ACTIVE".yellow(),
 		};
-		println!("{} - {}:", self.name, status);
+		println!("{} - {}", self.name, status);
 	}
 	pub fn print_long(&self, pre: &str) {
 		self.print_short();

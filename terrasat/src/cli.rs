@@ -1,13 +1,18 @@
-use std::io::{stdin,stdout,Write};
-use crate::config::{Config};
+use std::{io::{stdin,stdout,Write}, str::FromStr};
+use crate::config::{Config, Satellite};
+use strum::IntoEnumIterator;
+use strum_macros::{EnumString, Display, EnumIter};
 
-const CMD_HELP: &str = "help";
-const CMD_LIST: &str = "list";
-const CMD_INFO: &str = "info";
-const CMD_EXIT: &str = "exit";
-const CMD_SLEEP: &str = "sleep";
-const CMD_WAKE: &str = "wake";
-const CMD_PLAN: &str = "plan";
+#[derive(Debug, Copy, Clone, PartialEq, EnumString, Display, EnumIter)]
+enum Command {
+    Help,
+    List,
+    Info,
+    Exit,
+    Sleep,
+    Wake,
+    Plan
+}
 
 #[derive(Debug)]
 pub struct CLI {
@@ -21,15 +26,48 @@ impl CLI {
         }
     }
 
-    fn print_help(&self) {
-        println!("List of commands:");
-        println!("\t{}\t\t\t -- display this output", CMD_HELP);
-        println!("\t{}\t\t\t -- list all satellites and ground terminals", CMD_LIST);
-        println!("\t{} [sat]\t\t -- get info for a satellite or ground terminal", CMD_INFO);
-        println!("\t{} [sat] [x]\t\t -- force sleep a satellite for x hours", CMD_SLEEP);
-        println!("\t{} [sat]\t\t -- force wakeup a sleeping satellite", CMD_SLEEP);
-        println!("\t{} [sat] [filename]\t -- set a satellite's mission plan to filename", CMD_PLAN);
-        println!("\t{}\t\t\t -- exit this application", CMD_EXIT);
+    fn get_command_details(cmd: Command) -> String {
+        match cmd {
+            Command::Help => "\t\t\t -- display this output".to_owned(),
+            Command::List => "\t\t\t -- list all satellites and ground terminals".to_owned(),
+            Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
+            Command::Plan => " [sat] [x]\t\t -- force sleep a satellite for x hours".to_owned(),
+            Command::Sleep => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
+            Command::Wake => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
+            Command::Exit => "\t\t\t -- exit this application".to_owned(),
+        }
+    }
+
+    fn get_command_arguments(cmd: Command) -> usize {
+        match cmd {
+            Command::Help => 0,
+            Command::List => 0,
+            Command::Info => 1,
+            Command::Plan => 2,
+            Command::Sleep => 2,
+            Command::Wake => 1,
+            Command::Exit => 0,
+        }
+    }
+
+    fn parse_sat(&self, str: String) -> Result<&Satellite, String> {
+        let index = str.parse::<usize>();
+        if index.is_err() || index.as_ref().unwrap() >= &self.config.satellites.len() {
+            return Err(format!("Cannot parse '{}' as index. Index must be an integer 0 < x < {}",
+                       str, &self.config.satellites.len()));
+        }
+        let index = index.unwrap();
+        Ok(&self.config.satellites[index])
+    }
+
+    fn parse_cmd(str: String) -> Result<Command, String> {
+        let str: &str = &str.to_lowercase();
+        let str = str[0..1].to_uppercase() + &str[1..];
+        let res = Command::from_str(&str);
+        if res.is_err() {
+            return Err(format!("Cannot parse command '{}'. Enter 'help' for list of valid commands", str));
+        }
+        return Ok(res.unwrap());
     }
 
     fn print_startup(&self) {
@@ -62,44 +100,52 @@ impl CLI {
             }
 
             // Match on tokens
-            match tokens[0].as_str() {
-                CMD_HELP => {
-                    self.print_help();
+            let res = CLI::parse_cmd(tokens[0].to_string());
+            let cmd: Command;
+            match res {
+                Ok(command) => cmd = command,
+                Err(message) => {
+                    println!("{}", message);
+                    continue;
                 }
-                CMD_EXIT => {
-                    println!("Closing...");
-                    return;
-                }
-                CMD_LIST => {
+            }
+            if CLI::get_command_arguments(cmd) != tokens.len() - 1 {
+                println!("Please enter {} arguments for command {}. See 'help' for more details.",
+                        CLI::get_command_arguments(cmd),
+                        cmd.to_string()
+                );
+            }
+            match cmd {
+                Command::Help => {
+                    println!("Commands:");
+                    for cmd in Command::iter() {
+                        println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
+                    }
+                },
+                Command::List => {
                     for sat in &self.config.satellites {
                         sat.print_short();
                     }
                 }
-                CMD_INFO => {
-                    if tokens.len() != 2 {
-                        println!("{} takes two parameters", CMD_INFO);
-                        continue;
+                Command::Info => {
+                    let res = self.parse_sat(tokens[1].to_string());
+                    match res {
+                        Ok(sat) => sat.print_long("\t"),
+                        Err(message) => println!("{}", message),
                     }
-                    let index = tokens[1].parse::<usize>();
-                    if index.is_err() || index.as_ref().unwrap() >= &self.config.satellites.len() {
-                        println!("Cannot parse '{}' as index. Index must be an integer 0 < x < {}",
-                        tokens[1], &self.config.satellites.len());
-                        continue;
-                    }
-                    let index = index.unwrap();
-                    self.config.satellites[index].print_long("\t\t");
                 }
-                CMD_PLAN => {
+                Command::Plan => {
                     println!("UNIMPLEMENTED!");
                 }
-                CMD_SLEEP => {
+                Command::Sleep => {
                     println!("UNIMPLEMENTED!");
                 }
-                CMD_WAKE => {
+                Command::Wake => {
                     println!("UNIMPLEMENTED!");
                 }
-                _ => {
-                    println!("Command '{}' not recognized. Type 'help' for list of commands.", tokens[0]);
+                Command::Exit => {
+                    println!("Closing...");
+                    return;
                 }
             }
         }

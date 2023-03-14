@@ -11,7 +11,7 @@ fn main() {
         print!("Err: {:#?}", config);
         return;
     }
-    println!("{:#?}", config);
+
     let config = config.unwrap();
 
     let cli = CLI::new(config);
