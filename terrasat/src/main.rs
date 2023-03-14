@@ -1,11 +1,20 @@
-use crate::config::Config;
+use crate::config::{Config};
+use crate::cli::{CLI};
 
 mod config;
+mod cli;
 
 fn main() {
-    println!("Hello, world!");
-
     let config = Config::new();
 
+    if config.is_err() {
+        print!("Err: {:#?}", config);
+        return;
+    }
     println!("{:#?}", config);
+    let config = config.unwrap();
+
+    let cli = CLI::new(config);
+
+    cli.run();
 }

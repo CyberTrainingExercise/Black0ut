@@ -27,11 +27,6 @@ struct ConfigToml {
 	cli: Option<HashMap<String, String>>,
 }
 
-#[derive(Debug)]
-struct CLI {
-
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 struct Satellite {
     os: String,
