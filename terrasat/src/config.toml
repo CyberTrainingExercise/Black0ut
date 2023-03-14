@@ -1,0 +1,17 @@
+[satellites]
+sat0.os = "OS: Ubuntu 20.2, Kernel: 5.4.0-74-generic"
+sat0.debug_mode = false
+sat0.password = "openup"
+sat0.connection_limit = 5
+
+sat1.os = "OS: Ubuntu 20.2, Kernel: 5.4.0-74-generic"
+sat1.debug_mode = false
+sat1.password = "sillygoose"
+sat1.connection_limit = 100
+
+sat31.os = "OS: Ubuntu 20.2, Kernel: 5.4.0-74-generic"
+sat31.debug_mode = false
+sat31.password = "sillygoose"
+sat31.connection_limit = 100
+
+[cli]
