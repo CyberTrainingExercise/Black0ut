@@ -9,9 +9,9 @@ sat1.debug_mode = false
 sat1.password = "sillygoose"
 sat1.connection_limit = 100
 
-sat31.os = "OS: Ubuntu 20.2, Kernel: 5.4.0-74-generic"
-sat31.debug_mode = false
-sat31.password = "sillygoose"
-sat31.connection_limit = 100
+sat2.os = "OS: Ubuntu 20.2, Kernel: 5.4.0-74-lowlatency"
+sat2.debug_mode = false
+sat2.password = "pkss2bmlkdztlK7i"
+sat2.connection_limit = 1
 
 [cli]
