@@ -1,5 +1,6 @@
-use std::{io::{stdin,stdout,Write}, str::FromStr};
+use std::{io::{stdin,stdout,Write}, str::FromStr, collections::HashMap};
 use crate::config::{Config, Satellite};
+use reqwest::Response;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 
@@ -80,7 +81,7 @@ impl CLI {
         ")
     }
 
-    pub fn run(&self) {
+    pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         self.print_startup();
         loop {
             let mut input=String::new();
@@ -117,6 +118,7 @@ impl CLI {
                         CLI::get_command_arguments(cmd),
                         cmd.to_string()
                 );
+                continue;
             }
             match cmd {
                 Command::Help => {
@@ -148,10 +150,11 @@ impl CLI {
                 }
                 Command::Exit => {
                     println!("Closing...");
-                    return;
+                    return Ok(());
                 }
                 Command::Exec => {
-                    println!("UNIMPLEMENTED!");
+                    let resp = reqwest::blocking::get("http://127.0.0.1:8000/status/5")?;
+                    println!("{:#?}", resp.text());
                 }
             }
         }

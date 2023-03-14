@@ -1,5 +1,5 @@
 [package]
-name = "terrasat"
+name = "server"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,8 +10,4 @@ serde = { version = "1.0.145", features = ["derive"] }
 toml = "0.5.9"
 colored = "2.0.0"
 strum = "0.24.1"
-strum_macros = "0.24"
-reqwest = { version = "0.11", features = ["blocking", "json"] }
-tokio = { version = "1", features = ["full"] }
-openssl = { version = "0.10", features = ["vendored"] }
-
+rocket = "0.5.0-rc.2"

@@ -16,5 +16,9 @@ fn main() {
 
     let cli = CLI::new(config);
 
-    cli.run();
+    let res = cli.run();
+    match res {
+        Ok(_) => println!("Done"),
+        Err(err) => println!("Err {}", err.as_ref()),
+    }
 }
