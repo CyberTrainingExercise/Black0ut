@@ -1,6 +1,14 @@
 use std::io::{stdin,stdout,Write};
 use crate::config::{Config};
 
+const CMD_HELP: &str = "help";
+const CMD_LIST: &str = "list";
+const CMD_INFO: &str = "info";
+const CMD_EXIT: &str = "exit";
+const CMD_SLEEP: &str = "sleep";
+const CMD_WAKE: &str = "wake";
+const CMD_PLAN: &str = "plan";
+
 #[derive(Debug)]
 pub struct CLI {
 	config: Config,
@@ -14,14 +22,14 @@ impl CLI {
     }
 
     fn print_help(&self) {
-        println!("List of commands:
-        help                        -- display this output
-        list                        -- list all satellites and ground terminals
-        info [x]                    -- get info for a satellite or ground terminal
-        shutdown [sat] [x]          -- force shutdown a satellite for x hours
-        plan [sat] [filename]       -- set a satellite's mission plan to filename
-        exit                        -- exit this application
-        ")
+        println!("List of commands:");
+        println!("\t{}\t\t\t -- display this output", CMD_HELP);
+        println!("\t{}\t\t\t -- list all satellites and ground terminals", CMD_LIST);
+        println!("\t{} [sat]\t\t -- get info for a satellite or ground terminal", CMD_INFO);
+        println!("\t{} [sat] [x]\t\t -- force sleep a satellite for x hours", CMD_SLEEP);
+        println!("\t{} [sat]\t\t -- force wakeup a sleeping satellite", CMD_SLEEP);
+        println!("\t{} [sat] [filename]\t -- set a satellite's mission plan to filename", CMD_PLAN);
+        println!("\t{}\t\t\t -- exit this application", CMD_EXIT);
     }
 
     fn print_startup(&self) {
@@ -29,6 +37,12 @@ impl CLI {
         
         Please type 'help' for list of commands.
         ")
+    }
+
+    fn print_list(&self) {
+        for sat in &self.config.satellites {
+            sat.print("\t\t");
+        }
     }
 
     pub fn run(&self) {
@@ -56,12 +70,15 @@ impl CLI {
 
             // Match on tokens
             match tokens[0].as_str() {
-                "help" => {
+                CMD_HELP => {
                     self.print_help();
                 }
-                "exit" => {
+                CMD_EXIT => {
                     println!("Closing...");
                     return;
+                }
+                CMD_LIST => {
+                    self.print_list();
                 }
                 _ => {
                     print!("Err: input {} invalid", tokens[0]);

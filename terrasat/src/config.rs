@@ -1,11 +1,10 @@
 use std::fmt::{Formatter, self, Display};
-use std::hash::Hash;
-use std::path::PathBuf;
-use std::{fs, vec};
+use std::{fs};
 use std::io::Error as IoError;
 use serde::{ Serialize, Deserialize };
 use toml;
 use std::collections::HashMap;
+use colored::{self, Colorize};
 
 #[derive(Debug, Clone)]
 pub struct ConfigParseError(String);
@@ -23,12 +22,42 @@ impl Eq for ConfigParseError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ConfigToml {
-    satellites: Option<HashMap<String, Satellite>>,
+    satellites: Option<HashMap<String, SatelliteToml>>,
 	cli: Option<HashMap<String, String>>,
 }
 
+#[derive(Debug)]
+pub enum SatelliteStatus {
+	ACTIVE,
+	INACTIVE,
+	SLEEP,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
-struct Satellite {
+pub struct SatelliteToml {
+	os: String,
+    debug_mode: bool,
+    password: String,
+    connection_limit: usize,
+}
+
+impl SatelliteToml {
+	pub fn to_sat(&self, index: &str) -> Satellite {
+		Satellite {
+			name: "Sat".to_owned() + index,
+			status: SatelliteStatus::ACTIVE,
+			os: self.os.clone(),
+			debug_mode: self.debug_mode,
+			password: self.password.clone(),
+			connection_limit: self.connection_limit
+		}
+	}
+}
+
+#[derive(Debug)]
+pub struct Satellite {
+	name: String,
+	status: SatelliteStatus,
     os: String,
     debug_mode: bool,
     password: String,
@@ -37,14 +66,37 @@ struct Satellite {
 
 impl Satellite {
 	pub fn empty() -> Self {
-		Satellite { os: String::from("Unknown"), debug_mode: false, password: String::from("Unknown"), connection_limit: 0 }
+		Satellite {
+			name: String::from("Unknown"),
+			status: SatelliteStatus::INACTIVE,
+			os: String::from("Unknown"),
+			debug_mode: false,
+			password: String::from("Unknown"),
+			connection_limit: 0
+		}
+	}
+	pub fn print(&self, pre: &str) {
+		let status = match self.status {
+			SatelliteStatus::ACTIVE => "ACTIVE".green(),
+			SatelliteStatus::INACTIVE => "ACTIVE".red(),
+			SatelliteStatus::SLEEP => "ACTIVE".yellow(),
+		};
+		println!("{} - {}:", self.name, status);
+		println!("{}OS - {}", pre, self.os);
+		print!("{}Debug mode - ", pre);
+		match self.debug_mode {
+			true => println!("ENABLED"),
+			false => println!("DISABLED"),
+		}
+		println!("{}Password length - {}", pre, self.password.len());
+		println!("{}Connection limit - {}", pre, self.connection_limit);
 	}
 }
 
 
 #[derive(Debug)]
 pub struct Config {
-    satellites: Vec<Satellite>,
+    pub satellites: Vec<Satellite>,
 }
 
 impl Config {
@@ -97,7 +149,7 @@ impl Config {
 							+ ". They need to named sat0...satn without skipping any #."
 							)))
 						}
-						vec[index] = sat;
+						vec[index] = sat.to_sat(&index.to_string());
 					}
 					vec
 				}
