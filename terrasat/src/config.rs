@@ -36,6 +36,7 @@ pub enum SatelliteStatus {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SatelliteToml {
 	os: String,
+	version: String,
     debug_mode: bool,
     password: String,
     connection_limit: usize,
@@ -45,6 +46,7 @@ impl SatelliteToml {
 	pub fn to_sat(&self, index: &str) -> Satellite {
 		Satellite {
 			name: "Sat".to_owned() + index,
+			version: self.version.clone(),
 			status: SatelliteStatus::ACTIVE,
 			os: self.os.clone(),
 			debug_mode: self.debug_mode,
@@ -58,6 +60,7 @@ impl SatelliteToml {
 pub struct Satellite {
 	name: String,
 	status: SatelliteStatus,
+	version: String,
     os: String,
     debug_mode: bool,
     password: String,
@@ -68,6 +71,7 @@ impl Satellite {
 	pub fn empty() -> Self {
 		Satellite {
 			name: String::from("Unknown"),
+			version: String::from("Unknown"),
 			status: SatelliteStatus::INACTIVE,
 			os: String::from("Unknown"),
 			debug_mode: false,
@@ -86,6 +90,7 @@ impl Satellite {
 	pub fn print_long(&self, pre: &str) {
 		self.print_short();
 		println!("{}OS - {}", pre, self.os);
+		println!("{}Version - {}", pre, self.version);
 		print!("{}Debug mode - ", pre);
 		match self.debug_mode {
 			true => println!("ENABLED"),

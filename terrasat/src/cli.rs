@@ -11,7 +11,8 @@ enum Command {
     Exit,
     Sleep,
     Wake,
-    Plan
+    Plan,
+    Exec,
 }
 
 #[derive(Debug)]
@@ -35,6 +36,7 @@ impl CLI {
             Command::Sleep => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
             Command::Wake => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
+            Command::Exec => " [sat] [filename]\t -- (DEBUG MODE ONLY) exec a python script on a remote satellite system".to_owned(),
         }
     }
 
@@ -47,6 +49,7 @@ impl CLI {
             Command::Sleep => 2,
             Command::Wake => 1,
             Command::Exit => 0,
+            Command::Exec => 2,
         }
     }
 
@@ -146,6 +149,9 @@ impl CLI {
                 Command::Exit => {
                     println!("Closing...");
                     return;
+                }
+                Command::Exec => {
+                    println!("UNIMPLEMENTED!");
                 }
             }
         }
