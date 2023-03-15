@@ -14,5 +14,6 @@ strum_macros = "0.24"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 tokio = { version = "1", features = ["full"] }
 openssl = { version = "0.10", features = ["vendored"] }
-model = { path = "../model" }
+serde_json = "1.0.64"
 
+model = { path = "../model" }

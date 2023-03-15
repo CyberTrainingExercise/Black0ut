@@ -1108,6 +1108,7 @@ dependencies = [
  "model",
  "rocket",
  "serde",
+ "serde_json",
  "strum",
  "toml",
 ]

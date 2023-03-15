@@ -113,10 +113,10 @@ impl Config {
 			},
 		})
 	}
-	pub fn get_sat(&self, sat: usize) -> String {
+	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {
 		if sat >= self.satellites.len() {
-			return "{Error: 'Index out of bounds'}".to_owned();
+			return Err(ConfigParseError("Error: 'Index out of bounds'".to_owned()));
 		}
-		format!("{:#?}", self.satellites[sat])
+		Ok(&self.satellites[sat])
 	}
 }

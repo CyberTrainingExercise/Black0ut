@@ -11,4 +11,6 @@ toml = "0.5.9"
 colored = "2.0.0"
 strum = "0.24.1"
 rocket = "0.5.0-rc.2"
+serde_json = "1.0.64"
+
 model = { path = "../model" }

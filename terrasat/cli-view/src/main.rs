@@ -16,5 +16,18 @@ fn main() {
 
     let cli = CLI::new(config);
 
-    cli.run();
+    cli.print_startup();
+    loop {
+        let res = cli.run();
+        match res {
+            Ok(should_stop) => {
+                if should_stop {
+                    break;
+                }
+            }
+            Err(err) => {
+                println!("{}", err);
+            }
+        }
+    }
 }

@@ -16,5 +16,3 @@ sat2.version = "v1.1.2"
 sat2.debug_mode = false
 sat2.password = "pkss2bmlkdztlK7i"
 sat2.connection_limit = 1
-
-[cli]
