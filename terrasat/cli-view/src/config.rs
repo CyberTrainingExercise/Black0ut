@@ -23,36 +23,17 @@ impl Eq for ConfigParseError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ConfigToml {
-    satellites: Option<HashMap<String, SatelliteToml>>,
 	cli: Option<HashMap<String, String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SatelliteToml {
-	os: String,
-	version: String,
-    debug_mode: bool,
-    password: String,
-    connection_limit: usize,
-}
-
-impl SatelliteToml {
-	pub fn to_sat(&self, index: &str) -> Satellite {
-		Satellite {
-			name: "Sat".to_owned() + index,
-			version: self.version.clone(),
-			status: SatelliteStatus::ACTIVE,
-			os: self.os.clone(),
-			debug_mode: self.debug_mode,
-			password: self.password.clone(),
-			connection_limit: self.connection_limit
-		}
-	}
+pub struct CLIToml {
+	server_host: String,
 }
 
 #[derive(Debug)]
 pub struct Config {
-    pub satellites: Vec<Satellite>,
+    pub server_host: String,
 }
 
 impl Config {
@@ -78,38 +59,23 @@ impl Config {
 		let config_toml: ConfigToml = toml::from_str(&content).unwrap_or_else(|_| {
 			("Failed to create ConfigToml Object out of config file.");
 			ConfigToml {
-				satellites: None,
 				cli: None,
 			}
 		});
 
 		Ok(Config
 		{
-			satellites: match config_toml.satellites {
-				Some(satellites) => {
-					let mut vec: Vec<Satellite> = Vec::with_capacity(satellites.len());
-					for _ in 0..satellites.len() {
-						vec.push(Satellite::empty());
-					}
-					for (name, sat) in satellites {
-						let index = name[3..].parse::<usize>();
-						if index.is_err() {
-							return Err(ConfigParseError(String::from("Incorrect satellite input for ".to_owned() + &name
-							+ ". They need to named sat0...satn without skipping any #."
-							)))
+			server_host: match config_toml.cli {
+				Some(params) => {
+					let mut ret = "".to_owned();
+					for (name, val) in params {
+						if name == "server_host" {
+							ret = val;
 						}
-						let index = index.unwrap();
-						if index > vec.len() {
-							return Err(ConfigParseError(String::from("Satellite index out of bounds for ".to_owned()
-							+ &name + " at index " + &index.to_string()
-							+ ". They need to named sat0...satn without skipping any #."
-							)))
-						}
-						vec[index] = sat.to_sat(&index.to_string());
 					}
-					vec
+					ret
 				}
-				None => Vec::new(),
+				None => "localhost:8000".to_owned(),
 			},
 		})
 	}

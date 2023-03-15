@@ -55,22 +55,22 @@ impl CLI {
         }
     }
 
-    fn parse_sat_index(&self, str: String) -> Result<usize, String> {
+    fn parse_sat_index(sats_len: usize, str: String) -> Result<usize, String> {
         let index = str.parse::<usize>();
-        if index.is_err() || index.as_ref().unwrap() >= &self.config.satellites.len() {
+        if index.is_err() || index.as_ref().unwrap() >= &sats_len {
             return Err(format!("Cannot parse '{}' as index. Index must be an integer 0 < x < {}",
-                       str, &self.config.satellites.len()));
+                       str, sats_len));
         }
         let index = index.unwrap();
         Ok(index)
     }
 
-    fn parse_sat(&self, str: String) -> Result<&Satellite, String> {
-        match self.parse_sat_index(str) {
-            Ok(index) => Ok(&self.config.satellites[index]),
-            Err(res) => Err(res),
-        }
-    }
+    // fn parse_sat(sats_len: usize, str: String) -> Result<&Satellite, String> {
+    //     match self.parse_sat_index(str) {
+    //         Ok(index) => Ok(&self.config.satellites[index]),
+    //         Err(res) => Err(res),
+    //     }
+    // }
 
     fn parse_cmd(str: String) -> Result<Command, String> {
         let str: &str = &str.to_lowercase();
@@ -136,16 +136,18 @@ impl CLI {
                     }
                 },
                 Command::List => {
-                    for sat in &self.config.satellites {
-                        sat.print_short();
-                    }
+                    // for sat in &self.config.satellites {
+                    //     sat.print_short();
+                    // }
+                    println!("UNIMPLMENTED!");
                 }
                 Command::Info => {
-                    let res = self.parse_sat(tokens[1].to_string());
-                    match res {
-                        Ok(sat) => sat.print_long("\t"),
-                        Err(message) => println!("{}", message),
-                    }
+                    // let res = self.parse_sat(tokens[1].to_string());
+                    // match res {
+                    //     Ok(sat) => sat.print_long("\t"),
+                    //     Err(message) => println!("{}", message),
+                    // }
+                    println!("UNIMPLMENTED!");
                 }
                 Command::Plan => {
                     println!("UNIMPLEMENTED!");
@@ -162,7 +164,7 @@ impl CLI {
                 }
                 Command::Exec => {
                     let index: usize;
-                    match self.parse_sat_index(tokens[1].to_string()) {
+                    match CLI::parse_sat_index(3, tokens[1].to_string()) {
                         Ok(i) => index = i,
                         Err(err) => {
                             println!("{}", err);
@@ -170,7 +172,7 @@ impl CLI {
                         }
                     }
                     let resp = reqwest::blocking::get(
-                        format!("http://127.0.0.1:8000/status/{}", index));
+                        format!("{}/status/{}", self.config.server_host, index));
                     match resp {
                         Ok(result) => {
                             println!("{}", result.text().unwrap());
