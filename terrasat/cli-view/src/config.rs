@@ -1,9 +1,7 @@
 use std::fmt::{Formatter, self, Display};
-use std::hash::Hash;
-use std::path::PathBuf;
 use std::{fs};
 use std::io::Error as IoError;
-use serde::{ Serialize, Deserialize };
+use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
 
@@ -23,27 +21,17 @@ impl Eq for ConfigParseError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ConfigToml {
-    satellites: Option<HashMap<String, Satellite>>,
 	cli: Option<HashMap<String, String>>,
 }
 
-#[derive(Debug)]
-struct CLI {
-
-}
-
 #[derive(Serialize, Deserialize, Debug)]
-struct Satellite {
-    os: String,
-    debug_mode: bool,
-    password: String,
-    connection_limit: i32,
+pub struct CLIToml {
+	server_host: String,
 }
-
 
 #[derive(Debug)]
 pub struct Config {
-    satellites: Vec<Satellite>,
+    pub server_host: String,
 }
 
 impl Config {
@@ -69,33 +57,23 @@ impl Config {
 		let config_toml: ConfigToml = toml::from_str(&content).unwrap_or_else(|_| {
 			("Failed to create ConfigToml Object out of config file.");
 			ConfigToml {
-				satellites: None,
 				cli: None,
 			}
 		});
 
 		Ok(Config
 		{
-			satellites: match config_toml.satellites {
-				Some(satellites) => {
-					let mut vec = Vec::with_capacity(satellites.len());
-					for (name, sat) in satellites {
-						let index = name[3..].parse::<usize>();
-						if index.is_err() {
-							return Err(ConfigParseError(String::from("Incorrect satellite input for ".to_owned() + &name
-							+ ". They need to named sat0...satn without skipping any #."
-							)))
+			server_host: match config_toml.cli {
+				Some(params) => {
+					let mut ret = "".to_owned();
+					for (name, val) in params {
+						if name == "server_host" {
+							ret = val;
 						}
-						if index.unwrap() > vec.len() {
-							return Err(ConfigParseError(String::from("Satellite index out of bounds for ".to_owned() + &name
-							+ ". They need to named sat0...satn without skipping any #."
-							)))
-						}
-						vec.push(sat);
 					}
-					vec
+					ret
 				}
-				None => Vec::new(),
+				None => "localhost:8000".to_owned(),
 			},
 		})
 	}
