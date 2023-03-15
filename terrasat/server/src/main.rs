@@ -1,10 +1,5 @@
 #[macro_use] extern crate rocket;
 
-use crate::config::{Config};
-use model::satellite::{Satellite, SatelliteStatus};
-
-#[cfg(test)] mod tests;
-
 mod server;
 mod config;
 
@@ -17,7 +12,6 @@ fn stats() -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-    let config = Config::new();
     rocket::build()
         .mount("/", routes![stats])
         .attach(server::stage())

@@ -1,7 +1,7 @@
 use std::fmt::{Formatter, self, Display};
 use std::{fs};
 use std::io::Error as IoError;
-use serde::{ Serialize, Deserialize };
+use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
 
@@ -112,5 +112,11 @@ impl Config {
 				None => Vec::new(),
 			},
 		})
+	}
+	pub fn get_sat(&self, sat: usize) -> String {
+		if sat >= self.satellites.len() {
+			return "{Error: 'Index out of bounds'}".to_owned();
+		}
+		format!("{:#?}", self.satellites[sat])
 	}
 }

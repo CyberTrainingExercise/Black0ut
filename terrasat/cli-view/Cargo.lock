@@ -445,6 +445,7 @@ name = "model"
 version = "0.1.0"
 dependencies = [
  "colored",
+ "serde",
 ]
 
 [[package]]

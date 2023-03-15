@@ -173,7 +173,7 @@ impl CLI {
                         format!("http://127.0.0.1:8000/status/{}", index));
                     match resp {
                         Ok(result) => {
-                            println!("{:#?}", result.text());
+                            println!("{}", result.text().unwrap());
                         },
                         Err(err) => println!("{}", err),
                     }

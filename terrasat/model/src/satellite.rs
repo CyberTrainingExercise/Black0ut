@@ -1,13 +1,14 @@
 use colored::{self, Colorize};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum SatelliteStatus {
 	ACTIVE,
 	INACTIVE,
 	SLEEP,
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Satellite {
 	pub name: String,
 	pub status: SatelliteStatus,
