@@ -1,6 +1,12 @@
 #[macro_use] extern crate rocket;
 
+use crate::config::{Config};
+use model::satellite::{Satellite, SatelliteStatus};
+
 #[cfg(test)] mod tests;
+
+mod server;
+mod config;
 
 // Try visiting:
 //   http://127.0.0.1:8000/
@@ -9,16 +15,10 @@ fn stats() -> &'static str {
     "System Status - Ok"
 }
 
-// Try visiting:
-//   http://127.0.0.1:8000/status/5
-#[get("/<sat>")]
-fn status(sat: usize) -> String {
-    format!("Sat{} Status - Ok", sat)
-}
-
 #[launch]
 fn rocket() -> _ {
+    let config = Config::new();
     rocket::build()
         .mount("/", routes![stats])
-        .mount("/status", routes![status])
+        .attach(server::stage())
 }

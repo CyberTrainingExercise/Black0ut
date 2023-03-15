@@ -689,6 +689,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "model"
+version = "0.1.0"
+dependencies = [
+ "colored",
+]
+
+[[package]]
 name = "multer"
 version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1097,6 +1104,7 @@ name = "server"
 version = "0.1.0"
 dependencies = [
  "colored",
+ "model",
  "rocket",
  "serde",
  "strum",

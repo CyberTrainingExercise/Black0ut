@@ -441,6 +441,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "model"
+version = "0.1.0"
+dependencies = [
+ "colored",
+]
+
+[[package]]
 name = "native-tls"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -829,6 +836,7 @@ name = "terrasat"
 version = "0.1.0"
 dependencies = [
  "colored",
+ "model",
  "openssl",
  "reqwest",
  "serde",

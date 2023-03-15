@@ -1,8 +1,9 @@
-use std::{io::{stdin,stdout,Write}, str::FromStr, collections::HashMap};
-use crate::config::{Config, Satellite};
+use std::{io::{stdin,stdout,Write}, str::FromStr, collections::HashMap, fmt::format};
 use reqwest::Response;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
+use crate::config::{Config};
+use model::satellite::{Satellite, SatelliteStatus};
 
 #[derive(Debug, Copy, Clone, PartialEq, EnumString, Display, EnumIter)]
 enum Command {
@@ -54,14 +55,21 @@ impl CLI {
         }
     }
 
-    fn parse_sat(&self, str: String) -> Result<&Satellite, String> {
+    fn parse_sat_index(&self, str: String) -> Result<usize, String> {
         let index = str.parse::<usize>();
         if index.is_err() || index.as_ref().unwrap() >= &self.config.satellites.len() {
             return Err(format!("Cannot parse '{}' as index. Index must be an integer 0 < x < {}",
                        str, &self.config.satellites.len()));
         }
         let index = index.unwrap();
-        Ok(&self.config.satellites[index])
+        Ok(index)
+    }
+
+    fn parse_sat(&self, str: String) -> Result<&Satellite, String> {
+        match self.parse_sat_index(str) {
+            Ok(index) => Ok(&self.config.satellites[index]),
+            Err(res) => Err(res),
+        }
     }
 
     fn parse_cmd(str: String) -> Result<Command, String> {
@@ -81,7 +89,7 @@ impl CLI {
         ")
     }
 
-    pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn run(&self) {
         self.print_startup();
         loop {
             let mut input=String::new();
@@ -150,11 +158,25 @@ impl CLI {
                 }
                 Command::Exit => {
                     println!("Closing...");
-                    return Ok(());
+                    return;
                 }
                 Command::Exec => {
-                    let resp = reqwest::blocking::get("http://127.0.0.1:8000/status/5")?;
-                    println!("{:#?}", resp.text());
+                    let index: usize;
+                    match self.parse_sat_index(tokens[1].to_string()) {
+                        Ok(i) => index = i,
+                        Err(err) => {
+                            println!("{}", err);
+                            continue;
+                        }
+                    }
+                    let resp = reqwest::blocking::get(
+                        format!("http://127.0.0.1:8000/status/{}", index));
+                    match resp {
+                        Ok(result) => {
+                            println!("{:#?}", result.text());
+                        },
+                        Err(err) => println!("{}", err),
+                    }
                 }
             }
         }
