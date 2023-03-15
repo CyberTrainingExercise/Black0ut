@@ -1,17 +1,9 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
-
 use rocket::State;
 use rocket::response::content::RawJson;
 use rocket::fairing::AdHoc;
 
 use crate::config::Config;
-
-// #[get("/")]
-// fn index(hit_count: &State<HitCount>) -> RawHtml<String> {
-//     let count = hit_count.0.fetch_add(1, Ordering::Relaxed) + 1;
-//     RawHtml(format!("Your visit is recorded!<br /><br />Visits: {}", count))
-// }
 
 // Try visiting:
 //   http://127.0.0.1:8000/count

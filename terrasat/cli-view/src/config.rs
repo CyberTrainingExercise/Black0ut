@@ -5,8 +5,6 @@ use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
 
-use model::satellite::{Satellite, SatelliteStatus};
-
 #[derive(Debug, Clone)]
 pub struct ConfigParseError(String);
 impl Display for ConfigParseError {

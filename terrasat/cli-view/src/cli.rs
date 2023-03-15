@@ -1,5 +1,4 @@
-use std::{io::{stdin,stdout,Write}, str::FromStr, collections::HashMap, fmt::{Display, Formatter, self}};
-use reqwest::Response;
+use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self}};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use crate::config::{Config};
