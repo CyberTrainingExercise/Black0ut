@@ -14,7 +14,7 @@ fn main() {
 
     let config = config.unwrap();
 
-    let cli = CLI::new(config);
+    let mut cli = CLI::new(config);
 
     cli.print_startup();
     loop {
