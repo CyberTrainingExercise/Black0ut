@@ -1,4 +1,4 @@
-use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self, format}};
+use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self}};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use colored::{self, Colorize};
