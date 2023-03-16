@@ -1,4 +1,4 @@
-use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self}};
+use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self, format}};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use crate::config::{Config};
@@ -105,6 +105,16 @@ impl CLI {
         }
     }
 
+    fn parse_sats(text: String) -> Result<Vec<Satellite>, CLIError> {
+        match serde_json::from_str(&text) {
+            Ok(sat) => Ok(sat),
+            Err(err) => {
+                println!("Uh oh, {}", err);
+                Err(CLIError(format!("{}", err)))
+            }
+        }
+    }
+
     pub fn print_startup(&self) {
         println!("Welcome to the Terrasat Network!
         
@@ -112,7 +122,16 @@ impl CLI {
         ")
     }
 
-    pub fn send_request(&self, route: String) -> Result<String, CLIError> {
+    fn get_sat_len(&self) -> Result<usize, CLIError> {
+        let text = self.send_request("/count".to_owned())?;
+        let index = text.parse::<usize>();
+        match index {
+            Ok(len) => Ok(len),
+            Err(err) => Err(CLIError(format!("{}", err))),
+        }
+    }
+
+    fn send_request(&self, route: String) -> Result<String, CLIError> {
         let resp = reqwest::blocking::get(
             format!("{}/{}", self.config.server_host, route));
         match resp {
@@ -175,20 +194,17 @@ impl CLI {
                 }
             },
             Command::List => {
-                // for sat in &self.config.satellites {
-                //     sat.print_short();
-                // }
-                println!("UNIMPLMENTED!");
+                let text = self.send_request(format!("all"))?;
+                let sats = CLI::parse_sats(text)?;
+                for sat in sats {
+                    sat.print_short();
+                }
             }
             Command::Info => {
-                // let res = self.parse_sat(tokens[1].to_string());
-                // match res {
-                //     Ok(sat) => sat.print_long("\t"),
-                //     Err(message) => println!("{}", message),
-                // }
-                let index = CLI::parse_sat_index(3, tokens[1].to_string())?;
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
                 let text = self.send_request(format!("status/{}", index))?;
-                let sat: Satellite = CLI::parse_sat(text)?;
+                let sat = CLI::parse_sat(text)?;
                 sat.print_long("\t");
             }
             Command::Plan => {
