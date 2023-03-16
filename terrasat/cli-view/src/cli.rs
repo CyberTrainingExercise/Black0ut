@@ -54,9 +54,9 @@ impl CLI {
             Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
             Command::Sleep => " [sat] [x]\t\t -- force sleep a satellite for x hours".to_owned(),
             Command::Wake => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
-            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
+            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename ".to_owned() + &"(ADMIN ONLY)".green().to_string(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
-            Command::Exec => " [sat] [filename]\t -- (DEBUG MODE ONLY) exec a python script on a remote satellite system".to_owned(),
+            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system ".to_owned() + &"(DEBUG ONLY)".yellow().to_string(),
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
         }
     }
@@ -72,6 +72,20 @@ impl CLI {
             Command::Exit => 0,
             Command::Exec => 2,
             Command::Login => 2,
+        }
+    }
+
+    fn is_admin_command(cmd: Command) -> bool {
+        match cmd {
+            Command::Help => false,
+            Command::List => false,
+            Command::Info => false,
+            Command::Plan => true,
+            Command::Sleep => false,
+            Command::Wake => false,
+            Command::Exit => false,
+            Command::Exec => false,
+            Command::Login => false,
         }
     }
 
@@ -195,7 +209,9 @@ impl CLI {
             Command::Help => {
                 println!("Commands:");
                 for cmd in Command::iter() {
-                    println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
+                    if !CLI::is_admin_command(cmd) || self.password.is_some() {
+                        println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
+                    }
                 }
             },
             Command::List => {
