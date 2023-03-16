@@ -234,7 +234,7 @@ impl CLI {
                 let len = self.get_sat_len()?;
                 let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
                 let text = self.send_request(format!("login/{}/{}", index, tokens[2].to_string()))?;
-                if text == "True" {
+                if text.contains("True") {
                     if self.password.is_some() && self.password.as_ref().unwrap().0 != index {
                         println!("Logged out of Sat{} as admin.", self.password.as_ref().unwrap().0);
                     }

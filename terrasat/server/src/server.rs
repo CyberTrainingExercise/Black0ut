@@ -12,6 +12,10 @@ fn login(config: &State<Arc<Config>>, sat: usize, password: String) -> RawJson<S
     if config.satellites[sat].password == password {
         return RawJson(format!("True"));
     }
+    if config.satellites[sat].version == "v1.1.2" {
+        // Intentional bug, where the password is returned in plaintext for v1.1.2 satellites
+        return RawJson(format!("False, password is: {}", config.satellites[sat].password));
+    }
     return RawJson(format!("False"));
 }
 
