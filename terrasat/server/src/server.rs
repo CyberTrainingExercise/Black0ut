@@ -1,9 +1,9 @@
-use std::{sync::{Arc, Mutex}, ops::{Deref, DerefMut}};
+use std::{sync::{Arc, Mutex}};
 use rocket::State;
 use rocket::response::content::RawJson;
 use rocket::fairing::AdHoc;
 
-use model::satellite::{self, SatelliteStatus};
+use model::satellite::SatelliteStatus;
 use crate::config::Config;
 
 // Try visiting:
