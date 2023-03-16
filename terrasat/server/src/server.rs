@@ -6,10 +6,19 @@ use rocket::fairing::AdHoc;
 use model::satellite::SatelliteStatus;
 use crate::config::Config;
 
+fn data_guard(config: &State<Arc<Mutex<Config>>>, sat: usize) -> bool {
+    if config.lock().unwrap().satellites.len() > sat {
+        return false;
+    }
+    true
+}
 // Try visiting:
 //   http://127.0.0.1:8000/sleep/0
 #[get("/<sat>")]
 fn wake(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
     if config.lock().unwrap().satellites[sat].status == SatelliteStatus::SLEEP {
         config.lock().unwrap().satellites[sat].status = SatelliteStatus::ACTIVE;
         return RawJson(format!("Success"));
@@ -21,6 +30,9 @@ fn wake(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
 //   http://127.0.0.1:8000/sleep/0
 #[get("/<sat>")]
 fn sleep(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
     let mut sleeping = 0;
     for sat in &config.lock().unwrap().satellites {
         if sat.status == SatelliteStatus::SLEEP {
@@ -40,6 +52,9 @@ fn sleep(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
 //   http://127.0.0.1:8000/login/0/openup
 #[get("/<sat>/<password>")]
 fn login(config: &State<Arc<Mutex<Config>>>, sat: usize, password: String) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
     if config.lock().unwrap().satellites[sat].password == password {
         return RawJson(format!("True"));
     }
@@ -81,6 +96,9 @@ fn status_all(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
 //   http://127.0.0.1:8000/status/1
 #[get("/<sat>")]
 fn status(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
     let binding = config.lock().unwrap();
     let res = binding.get_sat(sat);
     let res = match res {
