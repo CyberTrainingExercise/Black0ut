@@ -48,17 +48,24 @@ impl CLI {
     }
 
     fn get_command_details(cmd: Command) -> String {
-        match cmd {
+        let mut ret = match cmd {
             Command::Help => "\t\t\t -- display this output".to_owned(),
             Command::List => "\t\t\t -- list all satellites and ground terminals".to_owned(),
             Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
-            Command::Sleep => " [sat] [x]\t\t -- force sleep a satellite for x hours".to_owned(),
+            Command::Sleep => " [sat]\t\t -- force sleep a satellite for".to_owned(),
             Command::Wake => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
-            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename ".to_owned() + &"(ADMIN ONLY)".green().to_string(),
+            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename ".to_owned(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
-            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system ".to_owned() + &"(DEBUG ONLY)".yellow().to_string(),
+            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system ".to_owned(),
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
+        };
+        if CLI::is_admin_command(cmd) {
+            ret += &"(ADMIN ONLY)".green().to_string();
         }
+        if CLI::is_debug_command(cmd) {
+            ret += &"(DEBUG ONLY)".yellow().to_string();
+        }
+        ret
     }
 
     fn get_command_arguments(cmd: Command) -> usize {
@@ -67,7 +74,7 @@ impl CLI {
             Command::List => 0,
             Command::Info => 1,
             Command::Plan => 2,
-            Command::Sleep => 2,
+            Command::Sleep => 1,
             Command::Wake => 1,
             Command::Exit => 0,
             Command::Exec => 2,
@@ -85,6 +92,20 @@ impl CLI {
             Command::Wake => false,
             Command::Exit => false,
             Command::Exec => false,
+            Command::Login => false,
+        }
+    }
+
+    fn is_debug_command(cmd: Command) -> bool {
+        match cmd {
+            Command::Help => false,
+            Command::List => false,
+            Command::Info => false,
+            Command::Plan => false,
+            Command::Sleep => false,
+            Command::Wake => false,
+            Command::Exit => false,
+            Command::Exec => true,
             Command::Login => false,
         }
     }
@@ -232,10 +253,16 @@ impl CLI {
                 println!("UNIMPLEMENTED!");
             }
             Command::Sleep => {
-                println!("UNIMPLEMENTED!");
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                let text = self.send_request(format!("sleep/{}", index))?;
+                println!("{}", text);
             }
             Command::Wake => {
-                println!("UNIMPLEMENTED!");
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                let text = self.send_request(format!("wake/{}", index))?;
+                println!("{}", text);
             }
             Command::Exit => {
                 println!("Closing...");

@@ -1,7 +1,7 @@
 use colored::{self, Colorize};
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SatelliteStatus {
 	ACTIVE,
 	INACTIVE,
@@ -35,8 +35,8 @@ impl Satellite {
 	pub fn print_short(&self) {
 		let status = match self.status {
 			SatelliteStatus::ACTIVE => "ACTIVE".green(),
-			SatelliteStatus::INACTIVE => "ACTIVE".red(),
-			SatelliteStatus::SLEEP => "ACTIVE".yellow(),
+			SatelliteStatus::INACTIVE => "INACTIVE".red(),
+			SatelliteStatus::SLEEP => "SLEEP".yellow(),
 		};
 		println!("{} - {}", self.name, status);
 	}
