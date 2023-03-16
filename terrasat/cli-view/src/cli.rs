@@ -1,6 +1,8 @@
 use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self, format}};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
+use colored::{self, Colorize};
+
 use crate::config::{Config};
 use model::satellite::{Satellite};
 
@@ -28,17 +30,20 @@ enum Command {
     Wake,
     Plan,
     Exec,
+    Login,
 }
 
 #[derive(Debug)]
 pub struct CLI {
 	config: Config,
+    password: Option<(usize, String)>,
 }
 
 impl CLI {
     pub fn new(config: Config) -> Self {
         CLI {
-            config: config
+            config: config,
+            password: None
         }
     }
 
@@ -47,11 +52,12 @@ impl CLI {
             Command::Help => "\t\t\t -- display this output".to_owned(),
             Command::List => "\t\t\t -- list all satellites and ground terminals".to_owned(),
             Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
-            Command::Plan => " [sat] [x]\t\t -- force sleep a satellite for x hours".to_owned(),
-            Command::Sleep => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
-            Command::Wake => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
+            Command::Sleep => " [sat] [x]\t\t -- force sleep a satellite for x hours".to_owned(),
+            Command::Wake => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
+            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
             Command::Exec => " [sat] [filename]\t -- (DEBUG MODE ONLY) exec a python script on a remote satellite system".to_owned(),
+            Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
         }
     }
 
@@ -65,6 +71,7 @@ impl CLI {
             Command::Wake => 1,
             Command::Exit => 0,
             Command::Exec => 2,
+            Command::Login => 2,
         }
     }
 
@@ -77,13 +84,6 @@ impl CLI {
         let index = index.unwrap();
         Ok(index)
     }
-
-    // fn parse_sat(sats_len: usize, str: String) -> Result<&Satellite, String> {
-    //     match self.parse_sat_index(str) {
-    //         Ok(index) => Ok(&self.config.satellites[index]),
-    //         Err(res) => Err(res),
-    //     }
-    // }
 
     fn parse_cmd(str: String) -> Result<Command, CLIError> {
         let str: &str = &str.to_lowercase();
@@ -149,10 +149,15 @@ impl CLI {
     }
 
     // Return bool, true = stop running. False = continue running.
-    pub fn run(&self) -> Result<bool, CLIError> {
+    pub fn run(&mut self) -> Result<bool, CLIError> {
         let mut input=String::new();
         // Read input
-        print!("> ");
+        if self.password.is_some() {
+            let str = format!("{} > ", self.password.as_ref().unwrap().0).green();
+            print!("{}", str);
+        } else {
+            print!("> ");
+        }
         let _ = stdout().flush();
         stdin().read_line(&mut input).expect("Err: input invalid!");
         if let Some('\n') = input.chars().next_back() {
@@ -224,6 +229,20 @@ impl CLI {
                 let index = CLI::parse_sat_index(3, tokens[1].to_string())?;
                 let text = self.send_request(format!("status/{}", index))?;
                 println!("{}", text);
+            }
+            Command::Login => {
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                let text = self.send_request(format!("login/{}/{}", index, tokens[2].to_string()))?;
+                if text == "True" {
+                    if self.password.is_some() && self.password.as_ref().unwrap().0 != index {
+                        println!("Logged out of Sat{} as admin.", self.password.as_ref().unwrap().0);
+                    }
+                    self.password = Some((index, tokens[2].to_string()));
+                    println!("Logged in to Sat{} as admin.", index);
+                } else {
+                    println!("Password is incorrect.");
+                }
             }
         }
         return Ok(false);

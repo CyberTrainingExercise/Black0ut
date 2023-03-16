@@ -6,6 +6,16 @@ use rocket::fairing::AdHoc;
 use crate::config::Config;
 
 // Try visiting:
+//   http://127.0.0.1:8000/login/0/openup
+#[get("/<sat>/<password>")]
+fn login(config: &State<Arc<Config>>, sat: usize, password: String) -> RawJson<String> {
+    if config.satellites[sat].password == password {
+        return RawJson(format!("True"));
+    }
+    return RawJson(format!("False"));
+}
+
+// Try visiting:
 //   http://127.0.0.1:8000/count
 #[get("/")]
 fn count(config: &State<Arc<Config>>) -> RawJson<String> {
@@ -63,5 +73,6 @@ pub fn stage() -> AdHoc {
             .manage(config)
             .mount("/count", routes![count])
             .mount("/all", routes![status_all])
+            .mount("/login", routes![login])
     })
 }
