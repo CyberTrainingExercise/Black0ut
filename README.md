@@ -1,10 +1,4 @@
-# WARNING!!!
-
-IF YOU ARE PERFORMING IN RIT's SPRING 2023 FTX, PLEASE DO NOT CONTINUE.
-
-# WARNING!!!
-
-# CTX4 - Operation Black0ut
+# CTX - Operation Black0ut
 
 Welcome to Operation Black0ut, a Cyber Training Exercise (CTX) designed for i5 cadets.
 
