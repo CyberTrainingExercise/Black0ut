@@ -16,7 +16,7 @@ pub struct Satellite {
     pub os: String,
     pub debug_mode: bool,
     pub password: String,
-    pub connection_limit: usize,
+    pub shutdown_code: Option<usize>,
 }
 
 
@@ -29,7 +29,7 @@ impl Satellite {
 			os: String::from("Unknown"),
 			debug_mode: false,
 			password: String::from("Unknown"),
-			connection_limit: 0
+			shutdown_code: None
 		}
 	}
 	pub fn print_short(&self) {
@@ -50,6 +50,5 @@ impl Satellite {
 			false => println!("DISABLED"),
 		}
 		println!("{}Password length - {}", pre, self.password.len());
-		println!("{}Connection limit - {}", pre, self.connection_limit);
 	}
 }

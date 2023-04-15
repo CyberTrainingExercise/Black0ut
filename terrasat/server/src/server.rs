@@ -55,6 +55,31 @@ fn pulse(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
 }
 
 // Try visiting:
+//   http://127.0.0.1:8000/shutdown/2/1882
+#[get("/<sat>/<code>")]
+fn shutdown(config: &State<Arc<Mutex<Config>>>, sat: usize, code: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
+    let config_code = config.lock().unwrap().satellites[sat].shutdown_code;
+    match config_code {
+        Some(val) => {
+            if val == code {
+                config.lock().unwrap().satellites[sat].status = SatelliteStatus::INACTIVE;
+                return RawJson(format!("Success"));
+            } else {
+                // purposely send them a different code for sats with shutdown
+                return RawJson(format!("Failed: Invalid Code"));
+            }
+        }
+        None => {
+            return RawJson(format!("Failed: Unknown Operation"));
+        }
+    }
+}
+
+
+// Try visiting:
 //   http://127.0.0.1:8000/sleep/0
 #[get("/<sat>")]
 fn wake(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
@@ -176,5 +201,6 @@ pub fn stage() -> AdHoc {
             .mount("/pulse", routes![pulse])
             .mount("/get_pulses", routes![get_pulses])
             .mount("/dummy_data", routes![dummy_data])
+            .mount("/shutdown", routes![shutdown])
     })
 }

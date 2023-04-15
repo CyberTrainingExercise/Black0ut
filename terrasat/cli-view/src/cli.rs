@@ -31,6 +31,7 @@ enum Command {
     Plan,
     Exec,
     Login,
+    Shutdown,
 }
 
 #[derive(Debug)]
@@ -54,10 +55,11 @@ impl CLI {
             Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
             Command::Sleep => " [sat]\t\t -- force sleep a satellite for".to_owned(),
             Command::Wake => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
-            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename ".to_owned(),
+            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
-            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system ".to_owned(),
+            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system".to_owned(),
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
+            Command::Shutdown => " -- unknown operation".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -79,6 +81,7 @@ impl CLI {
             Command::Exit => 0,
             Command::Exec => 2,
             Command::Login => 2,
+            Command::Shutdown => 2,
         }
     }
 
@@ -93,6 +96,7 @@ impl CLI {
             Command::Exit => false,
             Command::Exec => false,
             Command::Login => false,
+            Command::Shutdown => false,
         }
     }
 
@@ -107,7 +111,16 @@ impl CLI {
             Command::Exit => false,
             Command::Exec => true,
             Command::Login => false,
+            Command::Shutdown => false,
         }
+    }
+
+    fn parse_code(str: String) -> Result<usize, CLIError> {
+        let code = str.parse::<usize>();
+        if code.is_err() {
+            return Err(CLIError(format!("Cannot parse '{}' as code. Code must be an integer.", str)));
+        }
+        Ok(code.unwrap())
     }
 
     fn parse_sat_index(sats_len: usize, str: String) -> Result<usize, CLIError> {
@@ -231,6 +244,9 @@ impl CLI {
                 println!("Commands:");
                 for cmd in Command::iter() {
                     if !CLI::is_admin_command(cmd) || self.password.is_some() {
+                        if cmd == Command::Shutdown {
+                            continue;
+                        }
                         println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
                     }
                 }
@@ -286,6 +302,13 @@ impl CLI {
                 } else {
                     println!("Password is incorrect.");
                 }
+            }
+            Command::Shutdown => {
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                let code = CLI::parse_code(tokens[2].to_string())?;
+                let text = self.send_request(format!("shutdown/{}/{}", index, code))?;
+                println!("{}", text);
             }
         }
         return Ok(false);

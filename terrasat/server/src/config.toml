@@ -3,13 +3,13 @@ sat0.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
 sat0.version = "v1.1.3"
 sat0.debug_mode = false
 sat0.password = "openup"
-sat0.connection_limit = 5
+sat0.shutdown_code = 0
 
 sat1.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
 sat1.version = "v1.1.3"
 sat1.debug_mode = false
 sat1.password = "sillygoose"
-sat1.connection_limit = 100
+sat1.shutdown_code = 0
 
 sat2.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
 sat2.version = "v1.1.2"
@@ -30,4 +30,4 @@ sat4.os = "Kubos v1.21.0, Kernel: 5.4.0-74-lowlatency"
 sat4.version = "v2.1.5"
 sat4.debug_mode = false
 sat4.password = "sempersupra"
-sat4.connection_limit = 100
+sat4.shutdown_code = 5501

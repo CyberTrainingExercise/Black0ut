@@ -36,11 +36,13 @@ pub struct SatelliteToml {
 	version: String,
     debug_mode: bool,
     password: String,
-    connection_limit: usize,
+    shutdown_code: usize,
 }
 
 impl SatelliteToml {
 	pub fn to_sat(&self, index: &str) -> Satellite {
+		let shutdown_code = if self.shutdown_code == 0 
+			{ None } else { Some(self.shutdown_code ) };
 		Satellite {
 			name: "Sat".to_owned() + index,
 			version: self.version.clone(),
@@ -48,7 +50,7 @@ impl SatelliteToml {
 			os: self.os.clone(),
 			debug_mode: self.debug_mode,
 			password: self.password.clone(),
-			connection_limit: self.connection_limit
+			shutdown_code: shutdown_code,
 		}
 	}
 }
