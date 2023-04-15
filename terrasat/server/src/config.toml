@@ -21,6 +21,7 @@ sat2.shutdown_code = 1882
 sat3.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
 sat3.version = "v1.1.3"
 sat3.debug_mode = true
+sat3.debug_ip = "sat0"
 sat3.password = "0FmG7AZIWsxc7f8PxWI3" # this is in the intel packet
 sat3.connection_limit = 100
 sat3.shutdown_code = 1105

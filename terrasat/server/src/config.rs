@@ -1,9 +1,12 @@
 use std::fmt::{Formatter, self, Display};
-use std::{fs};
+use std::{fs, vec};
 use std::io::Error as IoError;
+use rocket::form::validate::Len;
 use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 
 use model::satellite::{Satellite, SatelliteStatus};
 
@@ -53,6 +56,7 @@ impl SatelliteToml {
 #[derive(Debug)]
 pub struct Config {
     pub satellites: Vec<Satellite>,
+	pub pulse: Vec<SystemTime>,
 }
 
 impl Config {
@@ -85,7 +89,7 @@ impl Config {
 
 		Ok(Config
 		{
-			satellites: match config_toml.satellites {
+			satellites: match config_toml.satellites.as_ref() {
 				Some(satellites) => {
 					let mut vec: Vec<Satellite> = Vec::with_capacity(satellites.len());
 					for _ in 0..satellites.len() {
@@ -111,6 +115,7 @@ impl Config {
 				}
 				None => Vec::new(),
 			},
+			pulse: vec!(SystemTime::now(); config_toml.satellites.as_ref().len()),
 		})
 	}
 	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {

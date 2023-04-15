@@ -1,4 +1,4 @@
-use std::{sync::{Arc, Mutex}};
+use std::{sync::{Arc, Mutex}, time::SystemTime};
 use rocket::State;
 use rocket::response::content::RawJson;
 use rocket::fairing::AdHoc;
@@ -12,6 +12,48 @@ fn data_guard(config: &State<Arc<Mutex<Config>>>, sat: usize) -> bool {
     }
     true
 }
+
+// Try visiting:
+//   http://127.0.0.1:8000/dummy_data
+#[get("/")]
+fn dummy_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+   RawJson("{\n  \"status0\": \"offline\",\n  \"status1\": \"ok\",\n  \"status2\": \"offline\"\n}".to_owned())
+}
+
+// Try visiting:
+//   http://127.0.0.1:8000/get_pulses
+#[get("/")]
+fn get_pulses(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+    let res = serde_json::to_string(&config.lock().unwrap().pulse);
+    match res {
+        Ok(str) => {
+            RawJson(str)
+        }
+        Err(err) => RawJson(format!("{}", err)),
+    }
+}
+
+
+// Try visiting:
+//   http://127.0.0.1:8000/get_pulse/0
+#[get("/<sat>")]
+fn get_pulse(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
+    let res = serde_json::to_string(&config.lock().unwrap().pulse[sat]);
+    return RawJson(format!("{:#?}", res));
+}
+
+#[put("/<sat>")]
+fn pulse(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
+    config.lock().unwrap().pulse[sat] = SystemTime::now();
+    return RawJson(format!("Ok"));
+}
+
 // Try visiting:
 //   http://127.0.0.1:8000/sleep/0
 #[get("/<sat>")]
@@ -130,5 +172,9 @@ pub fn stage() -> AdHoc {
             .mount("/login", routes![login])
             .mount("/sleep", routes![sleep])
             .mount("/wake", routes![wake])
+            .mount("/get_pulse", routes![get_pulse])
+            .mount("/pulse", routes![pulse])
+            .mount("/get_pulses", routes![get_pulses])
+            .mount("/dummy_data", routes![dummy_data])
     })
 }

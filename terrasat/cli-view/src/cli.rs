@@ -151,7 +151,7 @@ impl CLI {
     }
 
     pub fn print_startup(&self) {
-        println!("Welcome to the Terrasat Network!
+        println!("Welcome to the Terrasat Operator Command and Control Application (TOCCA).
         
         Please type 'help' for list of commands.
         ")
