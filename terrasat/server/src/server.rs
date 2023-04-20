@@ -6,11 +6,17 @@ use rocket::fairing::AdHoc;
 use model::satellite::SatelliteStatus;
 use crate::config::Config;
 
+fn guard(config: &State<Arc<Mutex<Config>>>) -> bool {
+    if config.lock().unwrap().dos_active {
+        return true;
+    }
+    false
+}
 fn data_guard(config: &State<Arc<Mutex<Config>>>, sat: usize) -> bool {
     if config.lock().unwrap().satellites.len() > sat {
         return false;
     }
-    true
+    guard(config)
 }
 
 // Try visiting:
@@ -37,6 +43,9 @@ fn set_dos(config: &State<Arc<Mutex<Config>>>, key: usize) -> RawJson<String> {
 //   http://127.0.0.1:8000/get_pulses
 #[get("/")]
 fn get_pulses(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+    if guard(config) {
+        return RawJson(format!("Failed: guard active"));
+    }
     let res = serde_json::to_string(&config.lock().unwrap().pulse);
     match res {
         Ok(str) => {
@@ -51,6 +60,9 @@ fn get_pulses(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
 //   http://127.0.0.1:8000/get_pulse/0
 #[get("/<sat>")]
 fn get_pulse(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
+    if guard(config) {
+        return RawJson(format!("Failed: guard active"));
+    }
     if data_guard(config, sat) {
         return RawJson(format!("Failed: index out of bounds"));
     }
@@ -149,6 +161,9 @@ fn login(config: &State<Arc<Mutex<Config>>>, sat: usize, password: String) -> Ra
 //   http://127.0.0.1:8000/count
 #[get("/")]
 fn count(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+    if guard(config) {
+        return RawJson(format!("Failed: guard active"));
+    }
     let count = &config.lock().unwrap().satellites.len();
     let res = serde_json::to_string(count);
     match res {
@@ -163,6 +178,9 @@ fn count(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
 //   http://127.0.0.1:8000/all
 #[get("/")]
 fn status_all(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+    if guard(config) {
+        return RawJson(format!("Failed: guard active"));
+    }
     let res = serde_json::to_string(&config.lock().unwrap().satellites);
     match res {
         Ok(str) => {
