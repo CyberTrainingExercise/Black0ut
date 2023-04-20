@@ -32,6 +32,7 @@ enum Command {
     Exec,
     Login,
     Shutdown,
+    Dos,
 }
 
 #[derive(Debug)]
@@ -60,6 +61,7 @@ impl CLI {
             Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system".to_owned(),
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
             Command::Shutdown => " -- unknown operation".to_owned(),
+            Command::Dos => " -- unknown operation".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -82,6 +84,7 @@ impl CLI {
             Command::Exec => 2,
             Command::Login => 2,
             Command::Shutdown => 2,
+            Command::Dos => 1,
         }
     }
 
@@ -97,6 +100,7 @@ impl CLI {
             Command::Exec => false,
             Command::Login => false,
             Command::Shutdown => false,
+            Command::Dos => false,
         }
     }
 
@@ -112,6 +116,23 @@ impl CLI {
             Command::Exec => true,
             Command::Login => false,
             Command::Shutdown => false,
+            Command::Dos => false,
+        }
+    }
+
+    fn is_hidden_command(cmd: Command) -> bool {
+        match cmd {
+            Command::Help => false,
+            Command::List => false,
+            Command::Info => false,
+            Command::Plan => false,
+            Command::Sleep => false,
+            Command::Wake => false,
+            Command::Exit => false,
+            Command::Exec => false,
+            Command::Login => false,
+            Command::Shutdown => true,
+            Command::Dos => true,
         }
     }
 
@@ -244,7 +265,7 @@ impl CLI {
                 println!("Commands:");
                 for cmd in Command::iter() {
                     if !CLI::is_admin_command(cmd) || self.password.is_some() {
-                        if cmd == Command::Shutdown {
+                        if CLI::is_hidden_command(cmd) {
                             continue;
                         }
                         println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
@@ -308,6 +329,11 @@ impl CLI {
                 let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
                 let code = CLI::parse_code(tokens[2].to_string())?;
                 let text = self.send_request(format!("shutdown/{}/{}", index, code))?;
+                println!("{}", text);
+            }
+            Command::Dos => {
+                let code = CLI::parse_code(tokens[1].to_string())?;
+                let text = self.send_request(format!("dos/{}", code))?;
                 println!("{}", text);
             }
         }

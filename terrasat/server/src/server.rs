@@ -20,6 +20,19 @@ fn dummy_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
    RawJson("{\n  \"status0\": \"offline\",\n  \"status1\": \"ok\",\n  \"status2\": \"offline\"\n}".to_owned())
 }
 
+#[get("/<key>")]
+fn set_dos(config: &State<Arc<Mutex<Config>>>, key: usize) -> RawJson<String> {
+    if key != 1521 {
+        return RawJson(format!("Incorrect Key"));
+    }
+    let current = config.lock().unwrap().dos_active;
+    config.lock().unwrap().dos_active = !current;
+    let result = if current
+    { "DOS inactive, all other commands will work" }
+    else { "DOS active, no other commands will work" };
+    return RawJson(format!("{result}"));
+}
+
 // Try visiting:
 //   http://127.0.0.1:8000/get_pulses
 #[get("/")]
@@ -202,5 +215,6 @@ pub fn stage() -> AdHoc {
             .mount("/get_pulses", routes![get_pulses])
             .mount("/dummy_data", routes![dummy_data])
             .mount("/shutdown", routes![shutdown])
+            .mount("/dos", routes![set_dos])
     })
 }

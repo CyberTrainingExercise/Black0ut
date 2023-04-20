@@ -59,6 +59,7 @@ impl SatelliteToml {
 pub struct Config {
     pub satellites: Vec<Satellite>,
 	pub pulse: Vec<SystemTime>,
+	pub dos_active: bool,
 }
 
 impl Config {
@@ -118,6 +119,7 @@ impl Config {
 				None => Vec::new(),
 			},
 			pulse: vec!(SystemTime::now(); config_toml.satellites.as_ref().len()),
+			dos_active: false,
 		})
 	}
 	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {
