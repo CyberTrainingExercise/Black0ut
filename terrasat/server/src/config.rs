@@ -37,6 +37,7 @@ pub struct SatelliteToml {
     debug_mode: bool,
     password: String,
     shutdown_code: usize,
+	has_pulse: bool,
 }
 
 impl SatelliteToml {
@@ -51,6 +52,7 @@ impl SatelliteToml {
 			debug_mode: self.debug_mode,
 			password: self.password.clone(),
 			shutdown_code: shutdown_code,
+			has_pulse: self.has_pulse,
 		}
 	}
 }
