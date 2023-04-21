@@ -36,6 +36,7 @@ enum Command {
     Shutdown,
     Dos,
     Loop,
+    Connect,
 }
 
 #[derive(Debug)]
@@ -66,6 +67,7 @@ impl CLI {
             Command::Shutdown => " -- unknown operation".to_owned(),
             Command::Dos => " -- unknown operation".to_owned(),
             Command::Loop => " -- unknown operation".to_owned(),
+            Command::Connect => " [ip_address]\t -- connects the CLI to a ground station".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -90,6 +92,7 @@ impl CLI {
             Command::Shutdown => 2,
             Command::Dos => 1,
             Command::Loop => 0,
+            Command::Connect => 1,
         }
     }
 
@@ -107,6 +110,7 @@ impl CLI {
             Command::Shutdown => false,
             Command::Dos => false,
             Command::Loop => false,
+            Command::Connect => false,
         }
     }
 
@@ -124,6 +128,7 @@ impl CLI {
             Command::Shutdown => false,
             Command::Dos => false,
             Command::Loop => false,
+            Command::Connect => false,
         }
     }
 
@@ -141,6 +146,7 @@ impl CLI {
             Command::Shutdown => true,
             Command::Dos => true,
             Command::Loop => true,
+            Command::Connect => false,
         }
     }
 
@@ -368,6 +374,10 @@ impl CLI {
                     }
                     thread::sleep(Duration::from_millis(1000));
                 }
+            }
+            Command::Connect => {
+                self.config.server_host = tokens[1].to_string();
+                println!("Updated host to {}", tokens[1].to_string());
             }
         }
         return Ok(false);
