@@ -54,7 +54,11 @@ If you would like to perform this CTX you will need the following:
 
 ### Setup
 
-- #TODO
+- Netclient Setup:
+
+See: https://netmaker.readthedocs.io/en/master/netclient.html#netclient--page-root
+
+
 
 ### Onsite Setup
 
