@@ -16,7 +16,8 @@ pub struct Satellite {
     pub os: String,
     pub debug_mode: bool,
     pub password: String,
-    pub connection_limit: usize,
+    pub shutdown_code: Option<usize>,
+	pub has_pulse: bool,
 }
 
 
@@ -29,14 +30,15 @@ impl Satellite {
 			os: String::from("Unknown"),
 			debug_mode: false,
 			password: String::from("Unknown"),
-			connection_limit: 0
+			shutdown_code: None,
+			has_pulse: false,
 		}
 	}
 	pub fn print_short(&self) {
 		let status = match self.status {
 			SatelliteStatus::ACTIVE => "ACTIVE".green(),
 			SatelliteStatus::INACTIVE => "INACTIVE".red(),
-			SatelliteStatus::SLEEP => "SLEEP".yellow(),
+			SatelliteStatus::SLEEP => "SLEEP".blue(),
 		};
 		println!("{} - {}", self.name, status);
 	}
@@ -50,6 +52,5 @@ impl Satellite {
 			false => println!("DISABLED"),
 		}
 		println!("{}Password length - {}", pre, self.password.len());
-		println!("{}Connection limit - {}", pre, self.connection_limit);
 	}
 }

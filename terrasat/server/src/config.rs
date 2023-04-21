@@ -1,9 +1,12 @@
 use std::fmt::{Formatter, self, Display};
-use std::{fs};
+use std::{fs, vec};
 use std::io::Error as IoError;
+use rocket::form::validate::Len;
 use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
+
 
 use model::satellite::{Satellite, SatelliteStatus};
 
@@ -33,11 +36,14 @@ pub struct SatelliteToml {
 	version: String,
     debug_mode: bool,
     password: String,
-    connection_limit: usize,
+    shutdown_code: usize,
+	has_pulse: bool,
 }
 
 impl SatelliteToml {
 	pub fn to_sat(&self, index: &str) -> Satellite {
+		let shutdown_code = if self.shutdown_code == 0 
+			{ None } else { Some(self.shutdown_code ) };
 		Satellite {
 			name: "Sat".to_owned() + index,
 			version: self.version.clone(),
@@ -45,7 +51,8 @@ impl SatelliteToml {
 			os: self.os.clone(),
 			debug_mode: self.debug_mode,
 			password: self.password.clone(),
-			connection_limit: self.connection_limit
+			shutdown_code: shutdown_code,
+			has_pulse: self.has_pulse,
 		}
 	}
 }
@@ -53,6 +60,8 @@ impl SatelliteToml {
 #[derive(Debug)]
 pub struct Config {
     pub satellites: Vec<Satellite>,
+	pub pulse: Vec<SystemTime>,
+	pub dos_active: bool,
 }
 
 impl Config {
@@ -85,7 +94,7 @@ impl Config {
 
 		Ok(Config
 		{
-			satellites: match config_toml.satellites {
+			satellites: match config_toml.satellites.as_ref() {
 				Some(satellites) => {
 					let mut vec: Vec<Satellite> = Vec::with_capacity(satellites.len());
 					for _ in 0..satellites.len() {
@@ -111,6 +120,8 @@ impl Config {
 				}
 				None => Vec::new(),
 			},
+			pulse: vec!(SystemTime::now(); config_toml.satellites.as_ref().len()),
+			dos_active: false,
 		})
 	}
 	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {

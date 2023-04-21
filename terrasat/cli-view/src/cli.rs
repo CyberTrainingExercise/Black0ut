@@ -2,9 +2,11 @@ use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use colored::{self, Colorize};
+use std::{thread, time::Duration};
+use std::path::Path;
 
 use crate::config::{Config};
-use model::satellite::{Satellite};
+use model::satellite::{Satellite, SatelliteStatus};
 
 #[derive(Debug, Clone)]
 pub struct CLIError(String);
@@ -31,6 +33,9 @@ enum Command {
     Plan,
     Exec,
     Login,
+    Shutdown,
+    Dos,
+    Loop,
 }
 
 #[derive(Debug)]
@@ -54,10 +59,13 @@ impl CLI {
             Command::Info => " [sat]\t\t -- get info for a satellite or ground terminal".to_owned(),
             Command::Sleep => " [sat]\t\t -- force sleep a satellite for".to_owned(),
             Command::Wake => " [sat]\t\t -- force wakeup a sleeping satellite".to_owned(),
-            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename ".to_owned(),
+            Command::Plan => " [sat] [filename]\t -- set a satellite's mission plan to filename".to_owned(),
             Command::Exit => "\t\t\t -- exit this application".to_owned(),
-            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system ".to_owned(),
+            Command::Exec => " [sat] [filename]\t -- exec a python script on a remote satellite system".to_owned(),
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
+            Command::Shutdown => " -- unknown operation".to_owned(),
+            Command::Dos => " -- unknown operation".to_owned(),
+            Command::Loop => " -- unknown operation".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -79,6 +87,9 @@ impl CLI {
             Command::Exit => 0,
             Command::Exec => 2,
             Command::Login => 2,
+            Command::Shutdown => 2,
+            Command::Dos => 1,
+            Command::Loop => 0,
         }
     }
 
@@ -93,6 +104,9 @@ impl CLI {
             Command::Exit => false,
             Command::Exec => false,
             Command::Login => false,
+            Command::Shutdown => false,
+            Command::Dos => false,
+            Command::Loop => false,
         }
     }
 
@@ -107,7 +121,35 @@ impl CLI {
             Command::Exit => false,
             Command::Exec => true,
             Command::Login => false,
+            Command::Shutdown => false,
+            Command::Dos => false,
+            Command::Loop => false,
         }
+    }
+
+    fn is_hidden_command(cmd: Command) -> bool {
+        match cmd {
+            Command::Help => false,
+            Command::List => false,
+            Command::Info => false,
+            Command::Plan => false,
+            Command::Sleep => false,
+            Command::Wake => false,
+            Command::Exit => false,
+            Command::Exec => false,
+            Command::Login => false,
+            Command::Shutdown => true,
+            Command::Dos => true,
+            Command::Loop => true,
+        }
+    }
+
+    fn parse_code(str: String) -> Result<usize, CLIError> {
+        let code = str.parse::<usize>();
+        if code.is_err() {
+            return Err(CLIError(format!("Cannot parse '{}' as code. Code must be an integer.", str)));
+        }
+        Ok(code.unwrap())
     }
 
     fn parse_sat_index(sats_len: usize, str: String) -> Result<usize, CLIError> {
@@ -151,7 +193,7 @@ impl CLI {
     }
 
     pub fn print_startup(&self) {
-        println!("Welcome to the Terrasat Network!
+        println!("Welcome to the Terrasat Operator Command and Control Application (TOCCA).
         
         Please type 'help' for list of commands.
         ")
@@ -231,6 +273,9 @@ impl CLI {
                 println!("Commands:");
                 for cmd in Command::iter() {
                     if !CLI::is_admin_command(cmd) || self.password.is_some() {
+                        if CLI::is_hidden_command(cmd) {
+                            continue;
+                        }
                         println!("\t{}{}", cmd.to_string(), CLI::get_command_details(cmd));
                     }
                 }
@@ -250,7 +295,21 @@ impl CLI {
                 sat.print_long("\t");
             }
             Command::Plan => {
-                println!("UNIMPLEMENTED!");
+                if Path::new(&tokens[2]).exists() {
+                    let len = self.get_sat_len()?;
+                    let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                    let text = self.send_request(format!("status/{}", index))?;
+                    let sat = CLI::parse_sat(text)?;
+                    if sat.status == SatelliteStatus::ACTIVE {
+                        println!("Sending plan file...");
+                        thread::sleep(Duration::from_millis(1000));
+                        println!("Plan file sent");
+                    } else {
+                        println!("Cannot plan a satellite with status: {:#?}", sat.status);
+                    }
+                } else {
+                    println!("Error: file {} does not exist!", &tokens[2])
+                }
             }
             Command::Sleep => {
                 let len = self.get_sat_len()?;
@@ -285,6 +344,29 @@ impl CLI {
                     println!("Logged in to Sat{} as admin.", index);
                 } else {
                     println!("Password is incorrect.");
+                }
+            }
+            Command::Shutdown => {
+                let len = self.get_sat_len()?;
+                let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                let code = CLI::parse_code(tokens[2].to_string())?;
+                let text = self.send_request(format!("shutdown/{}/{}", index, code))?;
+                println!("{}", text);
+            }
+            Command::Dos => {
+                let code = CLI::parse_code(tokens[1].to_string())?;
+                let text = self.send_request(format!("dos/{}", code))?;
+                println!("{}", text);
+            }
+            Command::Loop => {
+                loop {
+                    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+                    let text = self.send_request(format!("all"))?;
+                    let sats = CLI::parse_sats(text)?;
+                    for sat in sats {
+                        sat.print_short();
+                    }
+                    thread::sleep(Duration::from_millis(1000));
                 }
             }
         }
