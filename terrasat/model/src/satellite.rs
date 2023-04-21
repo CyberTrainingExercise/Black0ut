@@ -17,6 +17,7 @@ pub struct Satellite {
     pub debug_mode: bool,
     pub password: String,
     pub shutdown_code: Option<usize>,
+	pub has_pulse: bool,
 }
 
 
@@ -29,14 +30,15 @@ impl Satellite {
 			os: String::from("Unknown"),
 			debug_mode: false,
 			password: String::from("Unknown"),
-			shutdown_code: None
+			shutdown_code: None,
+			has_pulse: false,
 		}
 	}
 	pub fn print_short(&self) {
 		let status = match self.status {
 			SatelliteStatus::ACTIVE => "ACTIVE".green(),
 			SatelliteStatus::INACTIVE => "INACTIVE".red(),
-			SatelliteStatus::SLEEP => "SLEEP".yellow(),
+			SatelliteStatus::SLEEP => "SLEEP".blue(),
 		};
 		println!("{} - {}", self.name, status);
 	}
