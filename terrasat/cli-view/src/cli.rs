@@ -2,6 +2,7 @@ use std::{io::{stdin,stdout,Write}, str::FromStr, fmt::{Display, Formatter, self
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use colored::{self, Colorize};
+use std::{thread, time::Duration};
 
 use crate::config::{Config};
 use model::satellite::{Satellite};
@@ -33,6 +34,7 @@ enum Command {
     Login,
     Shutdown,
     Dos,
+    Loop,
 }
 
 #[derive(Debug)]
@@ -62,6 +64,7 @@ impl CLI {
             Command::Login => " [sat] [password]\t -- login to a satellite to perform admin commands".to_owned(),
             Command::Shutdown => " -- unknown operation".to_owned(),
             Command::Dos => " -- unknown operation".to_owned(),
+            Command::Loop => " -- unknown operation".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -85,6 +88,7 @@ impl CLI {
             Command::Login => 2,
             Command::Shutdown => 2,
             Command::Dos => 1,
+            Command::Loop => 0,
         }
     }
 
@@ -101,6 +105,7 @@ impl CLI {
             Command::Login => false,
             Command::Shutdown => false,
             Command::Dos => false,
+            Command::Loop => false,
         }
     }
 
@@ -117,6 +122,7 @@ impl CLI {
             Command::Login => false,
             Command::Shutdown => false,
             Command::Dos => false,
+            Command::Loop => false,
         }
     }
 
@@ -133,6 +139,7 @@ impl CLI {
             Command::Login => false,
             Command::Shutdown => true,
             Command::Dos => true,
+            Command::Loop => true,
         }
     }
 
@@ -335,6 +342,17 @@ impl CLI {
                 let code = CLI::parse_code(tokens[1].to_string())?;
                 let text = self.send_request(format!("dos/{}", code))?;
                 println!("{}", text);
+            }
+            Command::Loop => {
+                loop {
+                    print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+                    let text = self.send_request(format!("all"))?;
+                    let sats = CLI::parse_sats(text)?;
+                    for sat in sats {
+                        sat.print_short();
+                    }
+                    thread::sleep(Duration::from_millis(1000));
+                } 
             }
         }
         return Ok(false);
