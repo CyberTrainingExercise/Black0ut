@@ -3,9 +3,10 @@ use strum::IntoEnumIterator;
 use strum_macros::{EnumString, Display, EnumIter};
 use colored::{self, Colorize};
 use std::{thread, time::Duration};
+use std::path::Path;
 
 use crate::config::{Config};
-use model::satellite::{Satellite};
+use model::satellite::{Satellite, SatelliteStatus};
 
 #[derive(Debug, Clone)]
 pub struct CLIError(String);
@@ -294,7 +295,21 @@ impl CLI {
                 sat.print_long("\t");
             }
             Command::Plan => {
-                println!("UNIMPLEMENTED!");
+                if Path::new(&tokens[2]).exists() {
+                    let len = self.get_sat_len()?;
+                    let index = CLI::parse_sat_index(len, tokens[1].to_string())?;
+                    let text = self.send_request(format!("status/{}", index))?;
+                    let sat = CLI::parse_sat(text)?;
+                    if sat.status == SatelliteStatus::ACTIVE {
+                        println!("Sending plan file...");
+                        thread::sleep(Duration::from_millis(1000));
+                        println!("Plan file sent");
+                    } else {
+                        println!("Cannot plan a satellite with status: {:#?}", sat.status);
+                    }
+                } else {
+                    println!("Error: file {} does not exist!", &tokens[2])
+                }
             }
             Command::Sleep => {
                 let len = self.get_sat_len()?;
@@ -352,7 +367,7 @@ impl CLI {
                         sat.print_short();
                     }
                     thread::sleep(Duration::from_millis(1000));
-                } 
+                }
             }
         }
         return Ok(false);
