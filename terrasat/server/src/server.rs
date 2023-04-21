@@ -1,4 +1,4 @@
-use std::{sync::{Arc, Mutex}, time::SystemTime};
+use std::{sync::{Arc, Mutex}, time::{SystemTime, UNIX_EPOCH}};
 use rocket::State;
 use rocket::response::content::RawJson;
 use rocket::fairing::AdHoc;
@@ -23,7 +23,63 @@ fn data_guard(config: &State<Arc<Mutex<Config>>>, sat: usize) -> bool {
 //   http://127.0.0.1:8000/dummy_data
 #[get("/")]
 fn dummy_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
-   RawJson("{\n  \"status0\": \"offline\",\n  \"status1\": \"ok\",\n  \"status2\": \"offline\"\n}".to_owned())
+   RawJson("{\n  \"status0\": \"offline\",\n  \"status1\": \"ok\",\n  \"status2\": \"offline\",\n  \"status15\": \"offline\",\n  \"status12\": \"ok\"\n}".to_owned())
+}
+
+// Try visiting:
+//   http://127.0.0.1:8000/ui
+#[get("/")]
+fn ui_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+    let mut res = "{\n".to_owned();
+    let mut i = 0;
+    let len = &config.lock().unwrap().satellites.len();
+    let now = SystemTime::now();
+    let now_duration = now
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards");
+    i = 0;
+    let mut set_inactive = Vec::new();
+    let mut set_active = Vec::new();
+    for pulse in &config.lock().unwrap().pulse {
+        let pulse_duration = pulse
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        if (now_duration.as_secs() - pulse_duration.as_secs()) > 5 {
+            set_inactive.push(i);
+        } else {
+            set_active.push(i);
+        }
+        i += 1;
+    }
+    for sat in set_inactive {
+        if !config.lock().unwrap().satellites[sat].has_pulse {
+            continue;
+        }
+        config.lock().unwrap().satellites[sat].status = SatelliteStatus::INACTIVE;
+        println!("sat {} has pulse down", sat);
+    }
+    for sat in set_active {
+        if !config.lock().unwrap().satellites[sat].has_pulse {
+            continue;
+        }
+        config.lock().unwrap().satellites[sat].status = SatelliteStatus::ACTIVE;
+        println!("sat {} has pulse up", sat);
+    }
+    i = 0;
+    for sat in &config.lock().unwrap().satellites {
+        match sat.status {
+            SatelliteStatus::ACTIVE => res += &format!("  \"status{}\": \"offline\"", i),
+            SatelliteStatus::SLEEP => res += &format!("  \"status{}\": \"sleep\"", i),
+            SatelliteStatus::INACTIVE => res += &format!("  \"status{}\": \"offline\"", i),
+        }
+        i += 1;
+        // no comma for last line
+        if i != *len {
+            res += ",\n";
+        }
+    }
+    res += "\n}";
+    RawJson(res)
 }
 
 #[get("/<key>")]
@@ -136,6 +192,9 @@ fn sleep(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
     if sleeping >= max {
         return RawJson(format!("Failed: max {} sats sleeping at once", max));
     }
+    if config.lock().unwrap().satellites[sat].status != SatelliteStatus::ACTIVE {
+        return RawJson(format!("Failed: cannot sleep {} because it is not active", sat));
+    }
     config.lock().unwrap().satellites[sat].status = SatelliteStatus::SLEEP;
     return RawJson(format!("Success"));
 }
@@ -234,5 +293,6 @@ pub fn stage() -> AdHoc {
             .mount("/dummy_data", routes![dummy_data])
             .mount("/shutdown", routes![shutdown])
             .mount("/dos", routes![set_dos])
+            .mount("/ui", routes![ui_data])
     })
 }
