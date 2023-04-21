@@ -1,6 +1,6 @@
-# CTX4 - Operation DedSec
+# CTX - Operation Black0ut
 
-Welcome to Operation DedSec, a Cyber Training Exercise (CTX) designed for i5 cadets.
+Welcome to Operation Black0ut, a Cyber Training Exercise (CTX) designed for i5 cadets.
 
 This CTX was designed to test cadets for leadership competencies in a high intensity simulation. This simulation will be carried out in both the land domain and in the cyber domain.
 

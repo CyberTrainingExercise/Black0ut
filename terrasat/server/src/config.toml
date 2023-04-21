@@ -1,0 +1,81 @@
+[satellites]
+# START Brute Force Cracking
+sat0.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat0.version = "v1.1.3"
+sat0.debug_mode = false
+sat0.password = "open"
+sat0.shutdown_code = 110031251231
+sat0.has_pulse = false
+
+sat5.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat5.version = "v1.1.3"
+sat5.debug_mode = false
+sat5.password = "up"
+sat5.shutdown_code = 110031251231
+sat5.has_pulse = false
+
+sat7.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat7.version = "v1.1.3"
+sat7.debug_mode = false
+sat7.password = "challenge"
+sat7.shutdown_code = 110031251231
+sat7.has_pulse = false
+
+sat8.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat8.version = "v1.1.3"
+sat8.debug_mode = false
+sat8.password = "fox"
+sat8.shutdown_code = 110031251231
+sat8.has_pulse = false
+
+sat9.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat9.version = "v1.1.3"
+sat9.debug_mode = false
+sat9.password = "hunter"
+sat9.shutdown_code = 110031251231
+sat9.has_pulse = false
+
+sat10.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat10.version = "v1.1.3"
+sat10.debug_mode = false
+sat10.password = "lol"
+sat10.shutdown_code = 110031251231
+sat10.has_pulse = false
+
+# END Brute Force Cracking
+
+sat1.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat1.version = "v1.1.3"
+sat1.debug_mode = false
+sat1.password = "sillygoose"
+sat1.shutdown_code = 0
+sat1.has_pulse = false
+
+sat2.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
+sat2.version = "v1.1.2"
+sat2.debug_mode = false
+sat2.password = "pkss2bmlkdztlK7i"
+sat2.shutdown_code = 1882
+sat2.has_pulse = false
+
+sat3.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
+sat3.version = "v2.1.3"
+sat3.debug_mode = true
+sat3.debug_ip = "sat0"
+sat3.password = "0FmG7AZIWsxc7f8PxWI3" # this is in the intel packet
+sat3.shutdown_code = 1105
+sat3.has_pulse = false
+
+sat4.os = "Kubos v1.21.0, Kernel: 5.4.0-74-lowlatency"
+sat4.version = "v2.1.5"
+sat4.debug_mode = false
+sat4.password = "sempersupra"
+sat4.shutdown_code = 5501
+sat4.has_pulse = false
+
+sat6.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat6.version = "v2.1.3"
+sat6.debug_mode = false
+sat6.password = "up"
+sat6.shutdown_code = 110031251231
+sat6.has_pulse = true
