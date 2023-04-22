@@ -202,6 +202,8 @@ impl CLI {
         println!("Welcome to the Terrasat Operator Command and Control Application (TOCCA).
         
         Please type 'help' for list of commands.
+
+        Please connect using 'connect [ip_address]'
         ")
     }
 
@@ -376,8 +378,8 @@ impl CLI {
                 }
             }
             Command::Connect => {
-                self.config.server_host = tokens[1].to_string();
-                println!("Updated host to {}", tokens[1].to_string());
+                self.config.server_host = "http://".to_string() + &tokens[1].to_string() + ":8000";
+                println!("Updated host to http://{}:8000", tokens[1].to_string());
             }
         }
         return Ok(false);

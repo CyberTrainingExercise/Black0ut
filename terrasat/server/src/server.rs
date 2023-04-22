@@ -68,7 +68,7 @@ fn ui_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
     i = 0;
     for sat in &config.lock().unwrap().satellites {
         match sat.status {
-            SatelliteStatus::ACTIVE => res += &format!("  \"status{}\": \"offline\"", i),
+            SatelliteStatus::ACTIVE => res += &format!("  \"status{}\": \"ok\"", i),
             SatelliteStatus::SLEEP => res += &format!("  \"status{}\": \"sleep\"", i),
             SatelliteStatus::INACTIVE => res += &format!("  \"status{}\": \"offline\"", i),
         }

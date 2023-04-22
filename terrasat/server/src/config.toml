@@ -44,19 +44,87 @@ sat10.has_pulse = false
 
 # END Brute Force Cracking
 
+# START Buffer Overflow
+
+sat11.os = "Windows 10 v15.07"
+sat11.version = "v3.5.2"
+sat11.debug_mode = false
+sat11.password = "asdkjwauisnan"
+sat11.shutdown_code = 110031251231
+sat11.has_pulse = true
+
+sat12.os = "Windows 10 v15.07"
+sat12.version = "v3.5.2"
+sat12.debug_mode = false
+sat12.password = "askmnqklasjda"
+sat12.shutdown_code = 110031251231
+sat12.has_pulse = true
+
+sat13.os = "Windows 10 v15.07"
+sat13.version = "v3.5.2"
+sat13.debug_mode = false
+sat13.password = "apowieqlkahsdha"
+sat13.shutdown_code = 110031251231
+sat13.has_pulse = true
+
+sat14.os = "Windows 10 v15.07"
+sat14.version = "v3.5.2"
+sat14.debug_mode = false
+sat14.password = "asdkljqaskdh"
+sat14.shutdown_code = 110031251231
+sat14.has_pulse = true
+
+# END Buffer Overflow
+
+
+# START SQL Injection
+
 sat1.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
-sat1.version = "v1.1.3"
+sat1.version = "v1.2.1 'Voskhod-X'"
 sat1.debug_mode = false
-sat1.password = "sillygoose"
-sat1.shutdown_code = 0
+sat1.password = "qtybbs1487sj"
+sat1.shutdown_code = 548123
 sat1.has_pulse = false
 
 sat2.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
 sat2.version = "v1.1.2"
 sat2.debug_mode = false
 sat2.password = "pkss2bmlkdztlK7i"
-sat2.shutdown_code = 1882
+sat2.shutdown_code = 712312
 sat2.has_pulse = false
+
+sat15.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat15.version = "v1.2.1 'Voskhod-X'"
+sat15.debug_mode = false
+sat15.password = "qweopoaisklq2"
+sat15.shutdown_code = 321671
+sat15.has_pulse = false
+
+sat16.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat16.version = "v1.2.1 'Voskhod-X'"
+sat16.debug_mode = false
+sat16.password = "aklwjeqpo232aj"
+sat16.shutdown_code = 632157
+sat16.has_pulse = false
+
+sat17.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat17.version = "v1.2.1 'Voskhod-X'"
+sat17.debug_mode = false
+sat17.password = "powerhousajj2ja"
+sat17.shutdown_code = 418321
+sat17.has_pulse = false
+
+sat18.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat18.version = "v1.2.1 'Voskhod-X'"
+sat18.debug_mode = false
+sat18.password = "ak2j4k1kllkja"
+sat18.shutdown_code = 612359
+sat18.has_pulse = false
+
+# END SQL Injection
+
+
+
 
 sat3.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
 sat3.version = "v2.1.3"
