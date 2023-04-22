@@ -390,10 +390,11 @@ impl CLI {
             Command::Disable => {
                 if self.password.is_none() {
                     println!("You must login to disable a satellite!");
+                } else {
+                    let code = self.password.as_ref().unwrap();
+                    let text = self.send_request(format!("disable/{}/{}", code.0, code.1))?;
+                    println!("{}", text);
                 }
-                let code = self.password.as_ref().unwrap();
-                let text = self.send_request(format!("disable/{}/{}", code.0, code.1))?;
-                println!("{}", text);
             }
         }
         return Ok(false);
