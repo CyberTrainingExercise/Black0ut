@@ -37,6 +37,7 @@ enum Command {
     Dos,
     Loop,
     Connect,
+    Disable,
 }
 
 #[derive(Debug)]
@@ -68,6 +69,7 @@ impl CLI {
             Command::Dos => " -- unknown operation".to_owned(),
             Command::Loop => " -- unknown operation".to_owned(),
             Command::Connect => " [ip_address]\t -- connects the CLI to a ground station".to_owned(),
+            Command::Disable => " \t\t\t -- disables logged in satellite".to_owned(),
         };
         if CLI::is_admin_command(cmd) {
             ret += &"(ADMIN ONLY)".green().to_string();
@@ -93,6 +95,7 @@ impl CLI {
             Command::Dos => 1,
             Command::Loop => 0,
             Command::Connect => 1,
+            Command::Disable => 0,
         }
     }
 
@@ -111,6 +114,7 @@ impl CLI {
             Command::Dos => false,
             Command::Loop => false,
             Command::Connect => false,
+            Command::Disable => true,
         }
     }
 
@@ -129,6 +133,7 @@ impl CLI {
             Command::Dos => false,
             Command::Loop => false,
             Command::Connect => false,
+            Command::Disable => false,
         }
     }
 
@@ -147,6 +152,7 @@ impl CLI {
             Command::Dos => true,
             Command::Loop => true,
             Command::Connect => false,
+            Command::Disable => false,
         }
     }
 
@@ -380,6 +386,14 @@ impl CLI {
             Command::Connect => {
                 self.config.server_host = "http://".to_string() + &tokens[1].to_string() + ":8000";
                 println!("Updated host to http://{}:8000", tokens[1].to_string());
+            }
+            Command::Disable => {
+                if self.password.is_none() {
+                    println!("You must login to disable a satellite!");
+                }
+                let code = self.password.as_ref().unwrap();
+                let text = self.send_request(format!("disable/{}/{}", code.0, code.1))?;
+                println!("{}", text);
             }
         }
         return Ok(false);

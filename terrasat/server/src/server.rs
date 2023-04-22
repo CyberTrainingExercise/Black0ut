@@ -93,7 +93,7 @@ fn set_dos(config: &State<Arc<Mutex<Config>>>, key: usize) -> RawJson<String> {
     { "DOS inactive, all other commands will work" }
     else { "DOS active, no other commands will work" };
     return RawJson(format!("{result}"));
-}
+}   
 
 // Try visiting:
 //   http://127.0.0.1:8000/get_pulses
@@ -133,6 +133,21 @@ fn pulse(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
     }
     config.lock().unwrap().pulse[sat] = SystemTime::now();
     return RawJson(format!("Ok"));
+}
+
+// Try visiting:
+//   http://127.0.0.1:8000/disable/0/open
+#[get("/<sat>/<code>")]
+fn disable(config: &State<Arc<Mutex<Config>>>, sat: usize, code: String) -> RawJson<String> {
+    if data_guard(config, sat) {
+        return RawJson(format!("Failed: index out of bounds"));
+    }
+    let password = config.lock().unwrap().satellites[sat].password.clone();
+    if password == code {
+        config.lock().unwrap().satellites[sat].status = SatelliteStatus::INACTIVE;
+        return RawJson(format!("Ok: sat {} set to inactive", sat));
+    }
+    RawJson(format!("Failed: incorrect password"))
 }
 
 // Try visiting:
@@ -294,5 +309,6 @@ pub fn stage() -> AdHoc {
             .mount("/shutdown", routes![shutdown])
             .mount("/dos", routes![set_dos])
             .mount("/ui", routes![ui_data])
+            .mount("/disable", routes![disable])
     })
 }
