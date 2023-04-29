@@ -255,7 +255,16 @@ fn status_all(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
     if guard(config) {
         return RawJson(format!("Failed: guard active"));
     }
-    let res = serde_json::to_string(&config.lock().unwrap().satellites);
+    let mut sats = Vec::new();
+    let binding = config.lock().unwrap();
+    for sat in 0..binding.satellites.len() {
+        let res = binding.get_clean_sat(sat);
+        match res {
+            Ok(val) => sats.push(val),
+            Err(err) => return RawJson(format!("{}", err)),
+        };
+    }
+    let res = serde_json::to_string(&sats);
     match res {
         Ok(str) => {
             RawJson(str)
@@ -272,9 +281,9 @@ fn status(config: &State<Arc<Mutex<Config>>>, sat: usize) -> RawJson<String> {
         return RawJson(format!("Failed: index out of bounds"));
     }
     let binding = config.lock().unwrap();
-    let res = binding.get_sat(sat);
+    let res = binding.get_clean_sat(sat);
     let res = match res {
-        Ok(val) => serde_json::to_string(val),
+        Ok(val) => serde_json::to_string(&val),
         Err(err) => return RawJson(format!("{}", err)),
     };
     match res {

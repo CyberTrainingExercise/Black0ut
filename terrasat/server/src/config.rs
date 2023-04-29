@@ -124,6 +124,15 @@ impl Config {
 			dos_active: false,
 		})
 	}
+	pub fn get_clean_sat(&self, sat: usize) -> Result<Satellite, ConfigParseError> {
+		if sat >= self.satellites.len() {
+			return Err(ConfigParseError("Error: 'Index out of bounds'".to_owned()));
+		}
+		let mut clean = self.satellites[sat].clone();
+		clean.password = "".to_owned();
+		clean.shutdown_code = None;
+		Ok(clean)
+	}
 	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {
 		if sat >= self.satellites.len() {
 			return Err(ConfigParseError("Error: 'Index out of bounds'".to_owned()));
