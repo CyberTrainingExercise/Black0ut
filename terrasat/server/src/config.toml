@@ -58,28 +58,28 @@ sat11.version = "v3.5.2"
 sat11.debug_mode = false
 sat11.password = "asdkjwauisnan"
 sat11.shutdown_code = 110031251231
-sat11.has_pulse = true
+sat11.has_pulse = false
 
 sat12.os = "Windows 10 v15.07"
 sat12.version = "v3.5.2"
 sat12.debug_mode = false
 sat12.password = "askmnqklasjda"
 sat12.shutdown_code = 110031251231
-sat12.has_pulse = true
+sat12.has_pulse = false
 
 sat13.os = "Windows 10 v15.07"
 sat13.version = "v3.5.2"
 sat13.debug_mode = false
 sat13.password = "apowieqlkahsdha"
 sat13.shutdown_code = 110031251231
-sat13.has_pulse = true
+sat13.has_pulse = false
 
 sat14.os = "Windows 10 v15.07"
 sat14.version = "v3.5.2"
 sat14.debug_mode = false
 sat14.password = "asdkljqaskdh"
 sat14.shutdown_code = 110031251231
-sat14.has_pulse = true
+sat14.has_pulse = false
 
 # END Buffer Overflow
 

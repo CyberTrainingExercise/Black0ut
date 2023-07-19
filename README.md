@@ -1,12 +1,16 @@
 # CTX - Operation Black0ut
 
+>> The following is still a Work In Progress
+
 Welcome to Operation Black0ut, a Cyber Training Exercise (CTX) designed for i5 cadets.
 
 This CTX was designed to test cadets for leadership competencies in a high intensity simulation. This simulation will be carried out in both the land domain and in the cyber domain.
 
-Tentative system diagram:
+## System Overview
 
-![diagram](Overview.drawio.png)
+Below is the recommended system diagram. Changes in scale are encouraged to meet particular needs.
+
+![diagram](diagrams/FullSystem.drawio.png)
 
 ### Objectives
 
@@ -36,9 +40,22 @@ If you would like to perform this CTX you will need the following:
 1. An Admin who is technically skilled to setup the scenario.
     - Hopefully this guide will make it easy, but you still need technical know how to do it.
     - Required skills:
-        - #TODO
+        - Linux
+        - Python
+        - Wireshark
+        - SQL Injection
+        - XOR Decryption
+        - Nmap
+        - Brute force
+        - Openstack (or similar cloud services)
+        - Netmaker & Wireguard for VPN
+    - Recommended skills:
+        - Rust
+        - Bash
+        - Javascript
 2. The following equipment:
-    - #TODO
+    - Recommended 15 workstations
+    - Recommended cloud service with >64GB RAM >16 VCPUs
 
 ### Expected Design
 
@@ -58,24 +75,7 @@ If you would like to perform this CTX you will need the following:
 
 ### Setup
 
-- Netclient Setup:
-
-See: https://netmaker.readthedocs.io/en/master/netclient.html#netclient--page-root
-
-Commands:
-curl -sL 'https://apt.netmaker.org/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/netclient.asc
-curl -sL 'https://apt.netmaker.org/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/netclient.list
-sudo apt update
-sudo apt install netclient=0.17.1-0
-netclient join -t eyJhcGljb25uc3RyaW5nIjoiYXBpLm5tLjEyOS0yMS0zMy0xNDQubmlwLmlvOjQ0MyIsIm5ldHdvcmsiOiJhZnJvdGMtMiIsImtleSI6IjgwNmI0OWRiOWUwNTNiN2EiLCJsb2NhbHJhbmdlIjoiIn0=
-
-Resize screen:
-xrandr -s 1920x1080
-
-wget https://github.com/rustdesk/rustdesk/releases/download/1.1.9/rustdesk-1.1.9.deb
-dkpg -i rustdesk-1.1.9.deb
-
-
+- #TODO
 
 ### Onsite Setup
 
