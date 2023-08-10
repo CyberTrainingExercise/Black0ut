@@ -2,13 +2,15 @@
 
 Operation Black0ut is not only the largest and most complex CTX ever created, it took 4 hours and ~70 cadets to simply excute. Currently this repository contains all of the needed code, but the specifics for orchestration are not up to repository standards. It is currently recommended as a resource for jump-starting a personalized CTX, but not as a stand-alone CTX. See [Operation Starcom](https://github.com/CyberTrainingExercise/Starcom) for a scaled down version.
 
+Please contact anyone on the i5 Cyber team for help with setting up this exercise.
+
 # CTX - Operation Black0ut
 
 Welcome to Operation Black0ut, a Cyber Training Exercise (CTX) designed for i5 cadets.
 
+Operation Black0ut mimics a multi-domain operations center (cyber, ground, air, intel). In the scenario, your team is responsible for infiltrating and disabliing a satellite network through ground operations and hacking in order to allow an airstrike on an enemy target. Please see [mission brief video](https://www.youtube.com/watch?v=hTQ4KaXyRTo).
+
 This CTX was designed to test cadets for leadership competencies in a high intensity simulation. This simulation will be carried out in the cyber domain with optional intel, ground combat, and virtual air components.
-
-
 
 ## System Overview
 
