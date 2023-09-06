@@ -37,10 +37,10 @@ pub struct Config {
 impl Config {
     pub fn new() -> Result<Self, ConfigParseError> {
 		let config_filepaths: [&str; 4] = [
+			"./cli-config.toml",
 			"./config.toml",
-			"./Config.toml",
+			"./src/cli-config.toml",
 			"./src/config.toml",
-			"./src/Config.toml",
 		];
 
 		let mut content: String = "".to_owned();
