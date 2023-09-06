@@ -104,6 +104,20 @@ A foreign military power has built a powerful satellite network called Terrasat.
 
 - #TODO
 
+### Development
+
+1. Build Terrasat system and CLI for production
+    - Run `cd terrasat/` and `./build.sh`
+    - You can find the built objects in `terrasat/builds/`
+1. Run Terrasat system locally
+    - Run `cd terrasat/cli-view` and `cargo run` to run the CLI
+    - Run `cd terrasat/server` and `cargo run` to run the Server
+        - You can also use `cd terrasat/server` and `./run` if you need the Rocket build to run on 0.0.0.0
+1. Build Terrasat UI
+    - Visit the [CTX Unity monorepo](https://github.com/CyberTrainingExercise/UnityProject) to build the Terrasat UI.
+    - Built objects can be placed in `terrasat_ui/` and packaged for upload with `./zip_build.sh`
+        - Currently only supports Linux
+
 ### Debrief Ideas
 
 - #TODO
