@@ -75,9 +75,9 @@ impl Config {
     pub fn new() -> Result<Self, ConfigParseError> {
 		let config_filepaths: [&str; 4] = [
 			"./config.toml",
-			"./Config.toml",
+			"./server-config.toml",
 			"./src/config.toml",
-			"./src/Config.toml",
+			"./src/server-config.toml",
 		];
 
 		let mut content: String = "".to_owned();
@@ -152,6 +152,7 @@ impl Config {
 		clean.shutdown_code = None;
 		Ok(clean)
 	}
+	#[allow(dead_code)]
 	pub fn get_sat(&self, sat: usize) -> Result<&Satellite, ConfigParseError> {
 		if sat >= self.satellites.len() {
 			return Err(ConfigParseError("Error: 'Index out of bounds'".to_owned()));
