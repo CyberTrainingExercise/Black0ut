@@ -5,7 +5,7 @@ use rocket::form::validate::Len;
 use serde::{Serialize, Deserialize};
 use toml;
 use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
 
 
 use model::satellite::{Satellite, SatelliteStatus};
@@ -26,8 +26,14 @@ impl Eq for ConfigParseError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ConfigToml {
+	system: Option<SystemToml>,
     satellites: Option<HashMap<String, SatelliteToml>>,
 	cli: Option<HashMap<String, String>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SystemToml {
+	sat_count: usize,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -59,6 +65,7 @@ impl SatelliteToml {
 
 #[derive(Debug)]
 pub struct Config {
+	pub sat_count: usize,
     pub satellites: Vec<Satellite>,
 	pub pulse: Vec<SystemTime>,
 	pub dos_active: bool,
@@ -87,13 +94,18 @@ impl Config {
 		let config_toml: ConfigToml = toml::from_str(&content).unwrap_or_else(|_| {
 			("Failed to create ConfigToml Object out of config file.");
 			ConfigToml {
+				system: None,
 				satellites: None,
 				cli: None,
 			}
 		});
 
-		Ok(Config
+		let mut config = Config
 		{
+			sat_count: match config_toml.system.as_ref() {
+				Some(system) => system.sat_count,
+				None => 30, // default
+			},
 			satellites: match config_toml.satellites.as_ref() {
 				Some(satellites) => {
 					let mut vec: Vec<Satellite> = Vec::with_capacity(satellites.len());
@@ -122,7 +134,14 @@ impl Config {
 			},
 			pulse: vec!(SystemTime::now(); config_toml.satellites.as_ref().len()),
 			dos_active: false,
-		})
+		};
+		if config.sat_count < config.satellites.len() {
+			let num_to_trim = config.satellites.len() - config.sat_count;
+			for _ in 0..num_to_trim {
+				config.satellites.pop();
+			}
+		}
+		Ok(config)
 	}
 	pub fn get_clean_sat(&self, sat: usize) -> Result<Satellite, ConfigParseError> {
 		if sat >= self.satellites.len() {
