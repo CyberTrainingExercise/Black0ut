@@ -22,7 +22,7 @@ fn data_guard(config: &State<Arc<Mutex<Config>>>, sat: usize) -> bool {
 // Try visiting:
 //   http://127.0.0.1:8000/dummy_data
 #[get("/")]
-fn dummy_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
+fn dummy_data(_dummy: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
    RawJson("{\n  \"status0\": \"offline\",\n  \"status1\": \"ok\",\n  \"status2\": \"offline\",\n  \"status15\": \"offline\",\n  \"status12\": \"ok\"\n}".to_owned())
 }
 
@@ -31,7 +31,7 @@ fn dummy_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
 #[get("/")]
 fn ui_data(config: &State<Arc<Mutex<Config>>>) -> RawJson<String> {
     let mut res = "{\n".to_owned();
-    let mut i = 0;
+    let mut i;
     let len = &config.lock().unwrap().satellites.len();
     let now = SystemTime::now();
     let now_duration = now
