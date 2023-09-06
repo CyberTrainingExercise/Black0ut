@@ -139,6 +139,7 @@ impl Config {
 			let num_to_trim = config.satellites.len() - config.sat_count;
 			for _ in 0..num_to_trim {
 				config.satellites.pop();
+				config.pulse.pop();
 			}
 		}
 		Ok(config)
