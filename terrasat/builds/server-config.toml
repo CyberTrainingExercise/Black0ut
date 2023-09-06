@@ -1,0 +1,230 @@
+[system]
+sat_count = 30 # this controls how many of the following satellites are read and built into the running system
+
+[satellites]
+# START Brute Force Cracking
+sat0.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat0.version = "v1.1.3"
+sat0.debug_mode = false
+sat0.password = "open"
+sat0.shutdown_code = 110031251231
+sat0.has_pulse = false
+
+sat5.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat5.version = "v1.1.3"
+sat5.debug_mode = false
+sat5.password = "up"
+sat5.shutdown_code = 110031251231
+sat5.has_pulse = false
+
+sat7.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat7.version = "v1.1.3"
+sat7.debug_mode = false
+sat7.password = "challenge"
+sat7.shutdown_code = 110031251231
+sat7.has_pulse = false
+
+sat8.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat8.version = "v1.1.3"
+sat8.debug_mode = false
+sat8.password = "fox"
+sat8.shutdown_code = 110031251231
+sat8.has_pulse = false
+
+sat9.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat9.version = "v1.1.3"
+sat9.debug_mode = false
+sat9.password = "hunter"
+sat9.shutdown_code = 110031251231
+sat9.has_pulse = false
+
+sat10.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat10.version = "v1.1.3"
+sat10.debug_mode = false
+sat10.password = "lol"
+sat10.shutdown_code = 110031251231
+sat10.has_pulse = false
+
+sat3.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
+sat3.version = "v1.1.3"
+sat3.debug_mode = true
+sat3.password = "sat" # this is in the intel packet
+sat3.shutdown_code = 1105
+sat3.has_pulse = false
+
+# END Brute Force Cracking
+
+# START Buffer Overflow
+
+sat11.os = "Windows 10 v15.07"
+sat11.version = "v3.5.2"
+sat11.debug_mode = false
+sat11.password = "asdkjwauisnan"
+sat11.shutdown_code = 110031251231
+sat11.has_pulse = true
+
+sat12.os = "Windows 10 v15.07"
+sat12.version = "v3.5.2"
+sat12.debug_mode = false
+sat12.password = "askmnqklasjda"
+sat12.shutdown_code = 110031251231
+sat12.has_pulse = true
+
+sat13.os = "Windows 10 v15.07"
+sat13.version = "v3.5.2"
+sat13.debug_mode = false
+sat13.password = "apowieqlkahsdha"
+sat13.shutdown_code = 110031251231
+sat13.has_pulse = true
+
+sat14.os = "Windows 10 v15.07"
+sat14.version = "v3.5.2"
+sat14.debug_mode = false
+sat14.password = "asdkljqaskdh"
+sat14.shutdown_code = 110031251231
+sat14.has_pulse = true
+
+# END Buffer Overflow
+
+
+# START SQL Injection
+
+sat1.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat1.version = "v1.2.1 'Voskhod-X'"
+sat1.debug_mode = false
+sat1.password = "qtybbs1487sj"
+sat1.shutdown_code = 548123
+sat1.has_pulse = false
+
+sat2.os = "Kubos v1.18.3, Kernel: 5.4.0-74-lowlatency"
+sat2.version = "v1.1.2"
+sat2.debug_mode = false
+sat2.password = "pkss2bmlkdztlK7i"
+sat2.shutdown_code = 712312
+sat2.has_pulse = false
+
+sat15.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat15.version = "v1.2.1 'Voskhod-X'"
+sat15.debug_mode = false
+sat15.password = "qweopoaisklq2"
+sat15.shutdown_code = 321671
+sat15.has_pulse = false
+
+sat16.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat16.version = "v1.2.1 'Voskhod-X'"
+sat16.debug_mode = false
+sat16.password = "aklwjeqpo232aj"
+sat16.shutdown_code = 632157
+sat16.has_pulse = false
+
+sat17.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat17.version = "v1.2.1 'Voskhod-X'"
+sat17.debug_mode = false
+sat17.password = "powerhousajj2ja"
+sat17.shutdown_code = 418321
+sat17.has_pulse = false
+
+sat18.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat18.version = "v1.2.1 'Voskhod-X'"
+sat18.debug_mode = false
+sat18.password = "ak2j4k1kllkja"
+sat18.shutdown_code = 612359
+sat18.has_pulse = false
+
+# END SQL Injection
+
+# START Packet Sniffing
+
+
+sat4.os = "Kubos v1.21.0, Kernel: 5.4.0-74-lowlatency"
+sat4.version = "v1.1.2"
+sat4.debug_mode = false
+sat4.password = "theopenday351"
+sat4.shutdown_code = 110031251231
+sat4.has_pulse = false
+
+sat6.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat6.version = "v1.1.2"
+sat6.debug_mode = false
+sat6.password = "jackson12312"
+sat6.shutdown_code = 110031251231
+sat6.has_pulse = false
+
+sat19.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat19.version = "v1.1.2"
+sat19.debug_mode = false
+sat19.password = "theallday670"
+sat19.shutdown_code = 110031251231
+sat19.has_pulse = false
+
+sat20.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat20.version = "v1.1.2"
+sat20.debug_mode = false
+sat20.password = "daysaway551"
+sat20.shutdown_code = 110031251231
+sat20.has_pulse = false
+
+sat21.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat21.version = "v1.1.2"
+sat21.debug_mode = false
+sat21.password = "manofsteel1239"
+sat21.shutdown_code = 110031251231
+sat21.has_pulse = false
+
+sat22.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat22.version = "v1.1.2"
+sat22.debug_mode = false
+sat22.password = "charles120391"
+sat22.shutdown_code = 110031251231
+sat22.has_pulse = false
+
+sat23.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat23.version = "v1.1.2"
+sat23.debug_mode = false
+sat23.password = "what"
+sat23.shutdown_code = 110031251231
+sat23.has_pulse = false
+
+sat24.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat24.version = "v1.1.2"
+sat24.debug_mode = false
+sat24.password = "commas8120"
+sat24.shutdown_code = 110031251231
+sat24.has_pulse = false
+
+sat25.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat25.version = "v1.1.2"
+sat25.debug_mode = false
+sat25.password = "firefoxthem"
+sat25.shutdown_code = 110031251231
+sat25.has_pulse = false
+
+sat26.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat26.version = "v1.1.2"
+sat26.debug_mode = false
+sat26.password = "powerhouse"
+sat26.shutdown_code = 110031251231
+sat26.has_pulse = false
+
+sat27.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat27.version = "v1.1.2"
+sat27.debug_mode = false
+sat27.password = "powerhouse"
+sat27.shutdown_code = 110031251231
+sat27.has_pulse = false
+
+sat28.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat28.version = "v1.1.2"
+sat28.debug_mode = false
+sat28.password = "catsanddogs"
+sat28.shutdown_code = 110031251231
+sat28.has_pulse = false
+
+sat29.os = "Kubos v1.18.3, Kernel: 5.4.0-74-generic"
+sat29.version = "v1.1.2"
+sat29.debug_mode = false
+sat29.password = "downhouse"
+sat29.shutdown_code = 110031251231
+sat29.has_pulse = false
+
+# END Packet Sniffing
